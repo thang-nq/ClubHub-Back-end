@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors');
+const dbConnect = require('./app/connection/dbConnect')
 const app = express()
 
 //PORT
@@ -14,13 +15,16 @@ app.use(express.json())
 //parse request of Content-type: Application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }))
 
-//Homepage
-app.get("/", (req, res) => {
-    return res.json({ message: "Welcome to homepage" })
-})
+//Connect database
+dbConnect.connect()
+
+//Routes
+require('./app/routes/auth.routes')(app)
+require('./app/routes/user.routes')(app)
 
 
 
 app.listen(PORT, () => {
-    console.log(`Server os running on port ${PORT}.`)
+    console.log('Hello')
+    console.log(`Server is running on port ${PORT}.`)
 })
