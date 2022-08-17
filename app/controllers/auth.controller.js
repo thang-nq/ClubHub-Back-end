@@ -142,7 +142,7 @@ exports.signin = (req, res) => {
                 return res.status(401).send({ message: "Please check your email to activate this account!" })
             }
 
-            let token = jwt.sign({ id: user.id }, config.secret, { expiresIn: 86400 })
+            let token = jwt.sign({ id: user.id }, config.secret)
             let authorities = []
             for (let i = 0; i < user.roles.length; i++) {
                 authorities.push("ROLE_" + user.roles[i].name.toUpperCase())
