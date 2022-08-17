@@ -4,6 +4,7 @@ const db = require('./../models')
 const User = db.user
 const Role = db.role
 
+//Verify if token is valid
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers['authorization']
     let token = ''

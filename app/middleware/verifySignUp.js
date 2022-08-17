@@ -21,6 +21,7 @@ checkDuplicateEmail = (req, res, next) => {
 
 }
 
+//Check if the role exist in database
 checkValidRole = (req, res, next) => {
     if (req.body.roles) {
         for (let i = 0; i < req.body.roles.length; i++) {

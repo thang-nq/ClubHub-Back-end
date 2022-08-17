@@ -10,6 +10,7 @@ module.exports = function (app) {
         next()
     })
 
+    //signup route
     app.post(
         "/api/auth/signup",
         [
@@ -19,8 +20,14 @@ module.exports = function (app) {
         controller.signup
     )
 
+    //signin route
     app.post(
         "/api/auth/signin",
         controller.signin
+    )
+
+    //Email verification route
+    app.get(
+        "/api/auth/confirm/:confirmationCode", controller.verifyUser
     )
 }
