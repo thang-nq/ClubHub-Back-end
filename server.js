@@ -2,6 +2,10 @@ const express = require('express')
 const cors = require('cors');
 const dbConnect = require('./app/connection/dbConnect')
 const app = express()
+const env = require('dotenv')
+const mongoose = require('mongoose')
+//env
+env.config()
 
 //PORT
 const PORT = process.env.PORT || 8080
@@ -16,7 +20,10 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 //Connect database
-dbConnect.connect()
+// dbConnect.connect()
+mongoose.connect((process.env.MONGOURL), () => {
+    console.log('Connect success')
+})
 
 //Routes
 require('./app/routes/auth.routes')(app)
