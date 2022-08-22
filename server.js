@@ -22,6 +22,8 @@ dbConnect.connect()
 require('./app/routes/auth.routes')(app)
 require('./app/routes/user.routes')(app)
 
+// mongo nhap mon
+// tuan ne 
 
 
 app.listen(PORT, () => {
