@@ -1,0 +1,7 @@
+const timestamp = new Date()
+const dd = timestamp.getDay()
+const mm = timestamp.getMonth()
+const yyyy = timestamp.getFullYear()
+const today = new Date(Date.now()).toLocaleString('en-GB', { timeZone: 'Asia/Ho_Chi_Minh' })
+console.log(`${dd}/${mm}/${yyyy}`)
+console.log(today)

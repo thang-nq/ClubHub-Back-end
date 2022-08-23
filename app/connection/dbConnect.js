@@ -10,7 +10,7 @@ const Role = db.role
 
 const connect = () => {
     db.mongoose
-        .connect("mongodb+srv://admin:Victor123@cluster0.jwcldmv.mongodb.net/?retryWrites=true&w=majority")
+        .connect(process.env.MONGOURL)
         .then(() => {
             console.log("Successfully connect to MongoDB")
             initial()

@@ -1,0 +1,12 @@
+POST https://rmit-club.herokuapp.com/api/auth/signup
+Content-Type: application/json
+
+{
+    "name": "Thang Nguyen",
+    "email" : "s796613@rmit.edu.vn",
+    "password" : "Nguyen123@",
+    "username" : "victornguyen",
+    "dob" : "04-08-1999",
+    "gender" : "Male",
+    "phone" : "012345678"
+}
