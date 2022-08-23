@@ -1,4 +1,3 @@
-const config = require("./../config/auth.config")
 const db = require('./../models')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
@@ -48,7 +47,7 @@ exports.signup = (req, res) => {
     }
 
     //If pass the check, generate a token
-    const token = jwt.sign({ email: req.body.email }, config.secret)
+    const token = jwt.sign({ email: req.body.email }, process.env.SECRET)
     const user = new User({
         email: req.body.email,
         name: req.body.name,
@@ -142,7 +141,7 @@ exports.signin = (req, res) => {
                 return res.status(401).send({ message: "Please check your email to activate this account!" })
             }
 
-            let token = jwt.sign({ id: user.id }, config.secret)
+            let token = jwt.sign({ id: user.id }, process.env.SECRET)
             let authorities = []
             for (let i = 0; i < user.roles.length; i++) {
                 authorities.push("ROLE_" + user.roles[i].name.toUpperCase())

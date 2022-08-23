@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken')
-const config = require('./../config/auth.config')
 const db = require('./../models')
 const User = db.user
 const Role = db.role
@@ -15,7 +14,7 @@ const verifyToken = (req, res, next) => {
         return res.status(401).send({ message: "Invalid token format" })
     }
 
-    jwt.verify(token, config.secret, (err, data) => {
+    jwt.verify(token, process.env.SECRET, (err, data) => {
         if (err) {
             return res.status(403).send({ message: err })
         }
