@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors');
 const dbConnect = require('./app/connection/dbConnect')
 const app = express()
+const commentRoute = require('./app/routes/comment.routes');
 
 //PORT
 const PORT = process.env.PORT || 8080
@@ -22,8 +23,11 @@ dbConnect.connect()
 require('./app/routes/auth.routes')(app)
 require('./app/routes/user.routes')(app)
 
-// mongo nhap mon
-// tuan ne 
+
+// Tuan's router
+// require('./app/routes/comment.routes')(app)
+
+app.use("/comment", commentRoute);
 
 
 app.listen(PORT, () => {
