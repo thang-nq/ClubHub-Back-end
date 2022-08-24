@@ -37,12 +37,12 @@ const User = mongoose.model(
             unique: true
         },
 
-        roles: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Role"
-            }
-        ]
+        roles: {
+            type: String,
+            enum: ["user", "clubprez", "admin"],
+            default: 'user',
+            require: true
+        }
     })
 )
 
