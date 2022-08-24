@@ -5,48 +5,12 @@ const nodemailer = require('./../config/nodemailer.config')
 const User = db.user
 const Role = db.role
 
-//Validate request body
-const sanitizeRequest = (req) => {
-    let testResult = {
-        message: 'Pass',
-        result: true
-    }
-    //Check missing input
-    if (!req.body.email || !req.body.password || !req.body.username || !req.body.dob) {
-        testResult.result = false
-        testResult.message = "Missing one of the required parameter"
-        return testResult
-    }
-
-    //Check email format 
-    const emailRegex = "^[A-Za-z0-9._%+-]+@rmit.edu.vn"
-    const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
-    if (!req.body.email.match(emailRegex)) {
-        testResult.result = false
-        testResult.message = "Rmit email address required"
-        return testResult
-    }
-
-    //and password strength
-    if (!passwordTest.test(req.body.password)) {
-        testResult.result = false
-        testResult.message = "Password not meet the requirement"
-        return testResult
-    }
-
-    return testResult
-}
 
 
 //Signup controller
 exports.signup = (req, res) => {
-    //Check request validity
-    const sanitizeResult = sanitizeRequest(req)
-    if (!sanitizeResult.result) {
-        return res.status(404).send({ message: sanitizeResult.message })
-    }
 
-    //If pass the check, generate a token
+    //If pass the check, generate a token base on email address
     const token = jwt.sign({ email: req.body.email }, process.env.SECRET)
     const user = new User({
         email: req.body.email,
@@ -114,9 +78,8 @@ exports.signup = (req, res) => {
 
 //Signin controller
 exports.signin = (req, res) => {
-    if (!sanitizeRequest(req)) {
-        return res.status(404).send({ message: "Invalid email or password format!" })
-    }
+
+    // Find user then append roles from role id
     User.findOne({
         email: req.body.email
     })
@@ -141,7 +104,7 @@ exports.signin = (req, res) => {
                 return res.status(401).send({ message: "Please check your email to activate this account!" })
             }
 
-            let token = jwt.sign({ id: user.id }, process.env.SECRET)
+            let token = jwt.sign({ id: user._id }, process.env.SECRET)
             let authorities = []
             for (let i = 0; i < user.roles.length; i++) {
                 authorities.push("ROLE_" + user.roles[i].name.toUpperCase())
@@ -151,7 +114,7 @@ exports.signin = (req, res) => {
                 email: user.email,
                 name: user.name,
                 username: user.username,
-                dob: user.dob,
+                // dob: user.dob,
                 avatarUrl: user.avatarUrl,
                 roles: authorities,
                 accessToken: token

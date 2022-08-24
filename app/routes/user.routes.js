@@ -1,20 +1,21 @@
+//Only for testing authentication & authorization
+
 const { authJwt } = require('./../middleware')
 const controller = require('./../controllers/user.controller')
+const Router = require("express").Router()
 
-module.exports = function (app) {
-    app.use(function (req, res, next) {
-        res.header(
-            "Access-Control-Allow-Headers",
-            "Authorization, Origin, Content-Type, Accept"
-        )
-        next()
-    })
 
-    app.get("/api/test/all", controller.allAccess)
+Router.get("/all", controller.allAccess)
 
-    app.get("/api/test/user", [authJwt.verifyToken], controller.userBoard)
 
-    app.get("/api/test/clubprez", [authJwt.verifyToken, authJwt.isClubPrez], controller.clubprezBoard)
+Router.get("/clubprez", [authJwt.verifyToken, authJwt.isClubPrez], controller.clubprezBoard)
 
-    app.get("/api/test/admin", [authJwt.verifyToken, authJwt.isAdmin], controller.adminBoard)
-}
+Router.get("/admin", [authJwt.verifyToken, authJwt.isAdmin], controller.adminBoard)
+
+//Get all user
+Router.get("/users", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUsers)
+
+//Get a user
+Router.get("/user", [authJwt.verifyToken], controller.getUser)
+
+module.exports = Router

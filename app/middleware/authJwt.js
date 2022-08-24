@@ -11,17 +11,55 @@ const verifyToken = (req, res, next) => {
         token = authHeader.split(' ')[1]
     } catch (err) {
 
-        return res.status(401).send({ message: "Invalid token format" })
+        return res.status(401).send({ message: "Incorrect token format" })
     }
 
     jwt.verify(token, process.env.SECRET, (err, data) => {
         if (err) {
-            return res.status(403).send({ message: err })
+            return res.status(403).send({ message: "Token validation failed" })
         }
-        req.userId = data.id
-        next()
+        User.findById(data.id).exec((err, user) => {
+            if (err) {
+                return res.status(500).send({ message: err })
+            }
+
+            //if user is not found then send error message
+            if (!user) {
+                return res.status(404).send({ message: "User not found!" })
+            }
+            req.userId = user.id
+            next()
+        })
     })
 }
+
+// const isUser = (req, res, next) => {
+//     User.findById(req.userId).exec((err, user) => {
+//         if (err) {
+//             return res.status(500).send({ message: err })
+//         }
+//         Role.find(
+//             {
+//                 _id: { $in: user.roles }
+//             },
+//             (err, roles) => {
+//                 if (err) {
+//                     return res.status(500).send({ message: err })
+//                 }
+
+//                 for (let i = 0; i < roles.length; i++) {
+//                     if (roles[i].name === "user") {
+//                         return next()
+//                     }
+//                 }
+
+//                 //if there is no "user role" then send error message
+//                 return res.status(403).send({ message: "Require user account!" })
+//             }
+//         )
+//     })
+
+// }
 
 //Find a user by id and check if the role exist
 const isAdmin = (req, res, next) => {
@@ -50,6 +88,8 @@ const isAdmin = (req, res, next) => {
         )
     })
 }
+
+
 
 const isClubPrez = (req, res, next) => {
     User.findById(req.userId).exec((err, user) => {

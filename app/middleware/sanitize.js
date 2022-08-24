@@ -1,4 +1,7 @@
 
+const emailRegex = "^[A-Za-z0-9._%+-]+@rmit.edu.vn"
+const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
+
 
 const sanitizeSignupRequest = (req, res, next) => {
     let testResult = {
@@ -13,8 +16,9 @@ const sanitizeSignupRequest = (req, res, next) => {
     }
 
     //Check email format 
-    const emailRegex = "^[A-Za-z0-9._%+-]+@rmit.edu.vn"
-    const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
+    // const emailRegex = "^[A-Za-z0-9._%+-]+@rmit.edu.vn"
+    // const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
+
     if (!req.body.email.match(emailRegex)) {
         testResult.result = false
         testResult.message = "Rmit email address required"
@@ -31,8 +35,21 @@ const sanitizeSignupRequest = (req, res, next) => {
     return next()
 }
 
+const sanitizeSigninRequest = (req, res, next) => {
+    if (!req.body.email || !req.body.password) {
+        return res.status(400).send({ message: "Missing parameter(s)" })
+    }
+
+    if (!req.body.email.match(emailRegex)) {
+        return res.status(400).send({ message: "Require rmit email format" })
+    }
+
+    next()
+}
+
 const sanitize = {
-    sanitizeSignupRequest
+    sanitizeSignupRequest,
+    sanitizeSigninRequest
 }
 
 module.exports = sanitize;

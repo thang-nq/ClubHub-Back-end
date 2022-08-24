@@ -3,7 +3,9 @@ const cors = require('cors');
 const dbConnect = require('./app/connection/dbConnect')
 const app = express()
 const env = require('dotenv')
-const mongoose = require('mongoose')
+const postRoute = require('./app/routes/post.routes')
+const authRoute = require('./app/routes/auth.routes')
+const userRoute = require('./app/routes/user.routes')
 //env
 env.config()
 
@@ -17,15 +19,15 @@ app.use(cors());
 app.use(express.json())
 
 //parse request of Content-type: Application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true, limit: "50mb" }))
 
 //Connect database
 dbConnect.connect()
 
 //Routes
-require('./app/routes/auth.routes')(app)
-require('./app/routes/user.routes')(app)
-
+app.use("/api", userRoute)
+app.use("/api/posts", postRoute)
+app.use("/api/auth", authRoute)
 
 
 app.listen(PORT, () => {
