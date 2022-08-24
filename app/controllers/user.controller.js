@@ -1,3 +1,6 @@
+const db = require('./../models/index')
+const User = db.user
+const { authJwt } = require('./../middleware')
 exports.allAccess = (req, res) => {
     res.status(200).send("Public content")
 }
@@ -12,4 +15,14 @@ exports.adminBoard = (req, res) => {
 
 exports.clubprezBoard = (req, res) => {
     res.status(200).send("Club President content")
+}
+
+exports.getAllUsers = async (req, res) => {
+    const Users = await User.find()
+    return res.status(200).send(Users)
+}
+
+exports.getUser = async (req, res) => {
+    const user = await User.findById(req.userId)
+    return res.status(200).send(user)
 }
