@@ -1,12 +1,15 @@
 //Config for email verification
 const nodemailer = require('nodemailer')
-const config = require('./auth.config')
+const env = require('dotenv')
 
-const user = config.email
-const password = config.emailPW
+env.config()
+
+const user = process.env.EMAIL
+const password = process.env.EMAILPW
+console.log("Mail:", user, password)
 
 const transport = nodemailer.createTransport({
-    service: "Gmail",
+    service: "gmail",
     auth: {
         user: user,
         pass: password
