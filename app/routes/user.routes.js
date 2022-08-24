@@ -16,6 +16,6 @@ Router.get("/admin", [authJwt.verifyToken, authJwt.isAdmin], controller.adminBoa
 Router.get("/users", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUsers)
 
 //Get a user
-Router.get("/user", [authJwt.verifyToken], controller.getUser)
+Router.get("/user", authJwt.verifyToken, controller.getUser)
 
 module.exports = Router

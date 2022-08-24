@@ -22,8 +22,7 @@ exports.getAllUsers = async (req, res) => {
     return res.status(200).send(Users)
 }
 
-exports.getUser = (req, res) => {
-    // let authorities = []
-    let user = User.findById(req.userId)
+exports.getUser = async (req, res) => {
+    const user = await User.findById(req.userId)
     return res.status(200).send(user)
 }
