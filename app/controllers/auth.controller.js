@@ -99,7 +99,7 @@ exports.verifyUser = (req, res) => {
                     return res.status(500).send({ message: err })
                 }
 
-                return res.status(200).send("Account activation success!")
+                return res.status(200).send(`<h1>Account activation success</h1>`)
             })
         })
         .catch((e) => console.log("error", e))
