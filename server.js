@@ -31,8 +31,11 @@ app.use("/api", userRoute)
 app.use("/api/posts", postRoute)
 app.use("/api/auth", authRoute)
 
-// Tuan's router
-// app.use("/comment", commentRoute);
+
+// mongo nhap mon
+// tuan ne 
+//
+//Hello commit
 
 
 app.listen(PORT, () => {
