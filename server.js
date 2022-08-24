@@ -32,9 +32,7 @@ app.use("/api/posts", postRoute)
 app.use("/api/auth", authRoute)
 
 // Tuan's router
-// require('./app/routes/comment.routes')(app)
-
-app.use("/comment", commentRoute);
+// app.use("/comment", commentRoute);
 
 
 app.listen(PORT, () => {
