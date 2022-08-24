@@ -23,18 +23,7 @@ exports.getAllUsers = async (req, res) => {
 }
 
 exports.getUser = (req, res) => {
-    let authorities = []
-    let user = User.findById(req.userId).populate("roles").exec((err, user) => {
-
-        for (let i = 0; i < user.roles.length; i++) {
-            authorities.push("ROLE_" + user.roles[i].name.toUpperCase())
-        }
-
-    }
-
-    )
-
-
-    user.roles = authorities
+    // let authorities = []
+    let user = User.findById(req.userId)
     return res.status(200).send(user)
 }
