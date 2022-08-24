@@ -7,6 +7,7 @@ const env = require('dotenv')
 const postRoute = require('./app/routes/post.routes')
 const authRoute = require('./app/routes/auth.routes')
 const userRoute = require('./app/routes/user.routes')
+const commentRoute = require('./app/routes/comment.routes')
 //env
 env.config()
 
@@ -32,10 +33,10 @@ app.use("/api/posts", postRoute)
 app.use("/api/auth", authRoute)
 
 
-// mongo nhap mon
-// tuan ne 
-//
-//Hello commit
+// Em tuan chicken
+// Comment routes
+
+app.use("/comment", commentRoute)
 
 
 app.listen(PORT, () => {

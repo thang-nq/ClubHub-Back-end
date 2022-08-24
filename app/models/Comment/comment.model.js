@@ -1,45 +1,24 @@
 const mongoose = require('mongoose');
 
-const authorSchema = new mongoose.Schema({
+const commentSchema = new mongoose.Schema({
 
-    name: {
+    // user: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'User',
+    // },
+
+    content: {
         type: String,
         required: true
-
     },
-    year:{
-        type: Number,
-        required: true
-    },
-    books:[
-        {
-            type: mongoose.Schema.Types.ObjectId, 
-            ref: "Books"
-        },
-    ],
-});
 
+    timeCreated: {
+        type: Date,
+        default: Date.now
+    }
 
-const bookSchema = new mongoose.Schema({
-    name: {
-        type:String,
-        required:true
-    },
-    pushlishedDate:{
-        type:String,
-        
-    },
-    genres:{
-        type:[String],
+})
 
-    },
-    author:{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "Author"
-    },
-});
+let Comment = mongoose.model('Comment', commentSchema);
 
-let Books = mongoose.model('Books',bookSchema);
-let Author = mongoose.model('Author',authorSchema);
-
-module.exports = {Books,Author};
+module.exports = {Comment};
