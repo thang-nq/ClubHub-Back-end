@@ -1,44 +1,51 @@
 const db = require('./../models')
 
-const ROLES = db.ROLES
 const User = db.user
 
+
+// Check email duplication
 checkDuplicateEmail = (req, res, next) => {
 
-    //Verify email duplication
+    // Lowercase before processing
+    const rmitEmail = req.body.email.toLowerCase()
     User.findOne({
-        email: req.body.email
+        email: rmitEmail
     }).exec((err, user) => {
         if (err) {
             return res.status(500).send({ message: err })
         }
 
         if (user) {
-            return res.status(400).send({ message: "Sign up failed, email already existed!" })
+            return res.status(400).send({ message: `Sign up failed, email ${rmitEmail} already existed!` })
         }
         next()
     })
 
 }
 
-//Check if the role exist in database
-checkValidRole = (req, res, next) => {
-    if (req.body.roles) {
-        for (let i = 0; i < req.body.roles.length; i++) {
-            if (!ROLES.includes(req.body.roles[i])) {
-                return res.status(400).send({
-                    message: `Failed! Role ${req.body.role[i]} does not exist!`
-                })
-            }
-        }
-    }
 
-    next()
+// Check username duplication
+checkDuplicateUsername = (req, res, next) => {
+    // Lowercase before processing
+    const reqUsername = req.body.username.toLowerCase()
+    User.findOne({
+        username: reqUsername
+    }).exec((err, user) => {
+        if (err) {
+            return res.status(500).send({ message: err })
+        }
+
+        if (user) {
+            return res.status(400).send({ message: `Sign up failed, username ${reqUsername} already existed!` })
+        }
+        next()
+    })
 }
+
 
 const verifySignUp = {
     checkDuplicateEmail,
-    checkValidRole
+    checkDuplicateUsername
 }
 
 module.exports = verifySignUp

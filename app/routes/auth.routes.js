@@ -8,8 +8,7 @@ Router.post(
     "/signup",
     [
         sanitize.sanitizeSignupRequest,
-        verifySignUp.checkDuplicateEmail,
-        verifySignUp.checkValidRole
+        verifySignUp.checkDuplicateEmail
     ],
     controller.signup
 )

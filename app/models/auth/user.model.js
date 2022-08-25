@@ -13,7 +13,8 @@ const User = mongoose.model(
 
         username: {
             type: String,
-            required: true
+            required: true,
+            unique: true
         },
         password: {
             type: String,
@@ -37,12 +38,12 @@ const User = mongoose.model(
             unique: true
         },
 
-        roles: [
-            {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Role"
-            }
-        ]
+        roles: {
+            type: String,
+            enum: ["user", "clubprez", "admin"],
+            default: 'user',
+            require: true
+        }
     })
 )
 

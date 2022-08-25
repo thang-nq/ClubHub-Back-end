@@ -1,6 +1,9 @@
 const db = require('./../models/index')
 const User = db.user
 const { authJwt } = require('./../middleware')
+
+
+// Test routes
 exports.allAccess = (req, res) => {
     res.status(200).send("Public content")
 }
@@ -16,12 +19,16 @@ exports.adminBoard = (req, res) => {
 exports.clubprezBoard = (req, res) => {
     res.status(200).send("Club President content")
 }
+//
 
+// Get all users
 exports.getAllUsers = async (req, res) => {
     const Users = await User.find()
     return res.status(200).send(Users)
 }
 
+
+// User - Personal information (accessToken require)
 exports.getUser = async (req, res) => {
     const user = await User.findById(req.userId)
     return res.status(200).send(user)
