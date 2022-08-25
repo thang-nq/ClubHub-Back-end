@@ -1,7 +1,7 @@
 
-const emailRegex = "^[A-Za-z0-9._%+-]+@rmit.edu.vn"
+const emailRegex = "^[A-Za-z0-9._%+-]+@rmit.edu.vn$"
 const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
-
+const usernameRegex = "^[A-Za-z0-9._-]{8,16}$"
 
 const sanitizeSignupRequest = (req, res, next) => {
     //Check missing input
@@ -22,6 +22,11 @@ const sanitizeSignupRequest = (req, res, next) => {
     //Check email format 
     if (!req.body.email.match(emailRegex)) {
         return res.status(400).send({ message: "Rmit email address required" })
+    }
+
+    //Check username format
+    if (!req.body.username.match(usernameRegex)) {
+        return res.status(400).send({ message: "Username must be from 8-16 characters,( . _ - are allowed )" })
     }
 
     //and password strength

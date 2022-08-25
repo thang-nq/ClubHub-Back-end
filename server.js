@@ -6,6 +6,7 @@ const env = require('dotenv')
 const postRoute = require('./app/routes/post.routes')
 const authRoute = require('./app/routes/auth.routes')
 const userRoute = require('./app/routes/user.routes')
+
 //env
 env.config()
 

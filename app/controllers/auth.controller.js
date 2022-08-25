@@ -10,6 +10,8 @@ const User = db.user
 exports.signup = (req, res) => {
 
     //If pass the check, generate a token base on email address
+    // const rmitEmail = req.body.email.toLowerCase()
+    // return res.status(200).send({ rmitEmail })
     const token = jwt.sign({ email: req.body.email }, process.env.SECRET)
     const user = new User({
         email: req.body.email,

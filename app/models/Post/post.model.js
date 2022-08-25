@@ -3,10 +3,7 @@ const Post = mongoose.model(
     "Post",
     new mongoose.Schema({
 
-        createAt: {
-            type: String,
-            required: true
-        },
+        createAt: String,
         updateAt: String,
 
         author: {

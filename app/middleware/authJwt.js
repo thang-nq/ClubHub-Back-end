@@ -28,7 +28,6 @@ const verifyToken = (req, res, next) => {
                 return res.status(404).send({ message: "User not found!" })
             }
             req.userId = user.id
-            req.roles = user.roles
             next()
         })
     })
@@ -37,20 +36,25 @@ const verifyToken = (req, res, next) => {
 
 //Find a user by id and check if the role exist
 const isAdmin = (req, res, next) => {
-    User.findById(req.userId).exec((err, user) => {
-        if (err) {
-            return res.status(500).send({ message: err })
-        }
+    try {
 
-        if (!user) {
-            return res.status(404).send({ message: "Fail! Admin user not found!" })
-        }
+        User.findById(req.userId).then(result => {
 
-        if (user.roles !== req.roles) {
+            if (!result) {
+                return res.status(404).send({ message: "Fail! Admin user not found!" })
+            }
+
+            if (result.roles === "admin") {
+                return next()
+            }
+
             return res.status(403).send({ message: "Fail! Admin account required!" })
         }
+        )
+
+    } catch (err) {
+        return res.status(500).send(err)
     }
-    )
 }
 
 
@@ -61,26 +65,17 @@ const isClubPrez = (req, res, next) => {
         if (err) {
             return res.status(500).send({ message: err })
         }
-        Role.find(
-            {
-                _id: { $in: user.roles }
-            },
-            (err, roles) => {
-                if (err) {
-                    return res.status(500).send({ message: err })
-                }
 
-                for (let i = 0; i < roles.length; i++) {
-                    if (roles[i].name === "clubprez") {
-                        return next()
-                    }
-                }
+        if (!user) {
+            return res.status(404).send({ message: "Fail! Clubpresident user not found!" })
+        }
 
-                //if there is no "admin role" then send error message
-                return res.status(403).send({ message: "Require club president account!" })
-            }
-        )
-    })
+        if (user.roles === "clubprez") {
+            next()
+        }
+        return res.status(403).send({ message: "Fail! Clubprez account required!" })
+    }
+    )
 }
 
 const authJwt = {
