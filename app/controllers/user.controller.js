@@ -23,13 +23,23 @@ exports.clubprezBoard = (req, res) => {
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
-    const Users = await User.find()
-    return res.status(200).send(Users)
+    try {
+
+        const Users = await User.find()
+        return res.status(200).send(Users)
+    } catch (err) {
+        return res.status(500).send(err)
+    }
 }
 
 
 // User - Personal information (accessToken require)
 exports.getUser = async (req, res) => {
-    const user = await User.findById(req.userId)
-    return res.status(200).send(user)
+    try {
+
+        const user = await User.findById(req.userId)
+        return res.status(200).send(user)
+    } catch (err) {
+        return res.status(500).send(err)
+    }
 }

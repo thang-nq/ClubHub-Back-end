@@ -5,24 +5,37 @@ const User = db.user
 
 // Get a post by id
 exports.getPost = async (req, res) => {
-    const post = await Post.findById(req.params.postId)
-    if (!post) {
-        return res.status(404).send({ message: "Post is not found" })
+    try {
+        const post = await Post.findById(req.params.postId)
+        if (!post) {
+            return res.status(404).send({ message: "Post is not found" })
+        }
+        return res.status(200).send(post)
+    } catch (error) {
+        return res.status(500).send(error)
     }
-    return res.status(200).send(post)
 }
 
 // Get all post
 exports.getPostList = async (req, res) => {
-    const postList = await Post.find()
-    return res.status(200).send(postList)
+    try {
+        const postList = await Post.find()
+        return res.status(200).send(postList)
+    } catch (err) {
+        return res.status(500).send(err)
+    }
 }
 
 
 // Get all post from a user
 exports.getUserPosts = async (req, res) => {
-    const postList = await Post.find({ author: req.userId })
-    return res.status(200).send(postList)
+    try {
+
+        const postList = await Post.find({ author: req.userId })
+        return res.status(200).send(postList)
+    } catch (err) {
+        return res.status(500).send(err)
+    }
 }
 
 
@@ -65,7 +78,6 @@ exports.likePost = async (req, res) => {
 
             // Convert Mongodb ObjectID to String before comparing with another string
             if (req.userId === post.likes[i].toString()) {
-                console.log("already like")
                 await post.updateOne({ $pull: { likes: req.userId } })
                 return res.status(200).send({ message: "Unlike post successfully" })
             }
