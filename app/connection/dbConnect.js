@@ -6,7 +6,6 @@ env.config()
 
 
 
-
 const connect = () => {
     db.mongoose
         .connect(process.env.MONGOURL)
