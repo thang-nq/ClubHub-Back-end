@@ -8,8 +8,8 @@ const Router = require('express').Router()
 // Get all post
 Router.get("/", controller.getPostList)
 
-// Get all post of a user
-Router.get("/search", authJwt.verifyToken, controller.getUserPosts)
+// Search post
+Router.get("/search", controller.getUserPosts)
 
 // Create a post (need accessToken)
 Router.post("/", [multer().none(), authJwt.verifyToken], controller.createNewPost)

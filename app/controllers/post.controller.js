@@ -37,7 +37,7 @@ exports.getUserPosts = async (req, res) => {
         const postList = await Post.find({ authorUsername: username_query })
         return res.status(200).send(postList)
     } catch (err) {
-        return res.status(500).send(err)
+        return res.status(500).send({ message: `Error! ${err.message}` })
     }
 }
 
