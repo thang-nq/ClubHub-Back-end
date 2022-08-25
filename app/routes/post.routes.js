@@ -9,7 +9,7 @@ const Router = require('express').Router()
 Router.get("/", controller.getPostList)
 
 // Get all post of a user
-Router.get("/user/all", authJwt.verifyToken, controller.getUserPosts)
+Router.get("/search", authJwt.verifyToken, controller.getUserPosts)
 
 // Create a post (need accessToken)
 Router.post("/", [multer().none(), authJwt.verifyToken], controller.createNewPost)

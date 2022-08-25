@@ -27,11 +27,14 @@ exports.getPostList = async (req, res) => {
 }
 
 
-// Get all post from a user
+// Get all post from a user by username
 exports.getUserPosts = async (req, res) => {
     try {
-
-        const postList = await Post.find({ author: req.userId })
+        const username_query = req.query.username.toLowerCase()
+        if (!username_query) {
+            return res.status(401).send({ message: "Missing query params" })
+        }
+        const postList = await Post.find({ authorUsername: username_query })
         return res.status(200).send(postList)
     } catch (err) {
         return res.status(500).send(err)
