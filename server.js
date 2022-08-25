@@ -36,7 +36,7 @@ app.use("/api/auth", authRoute)
 // Em tuan chicken
 // Comment routes
 
-app.use("/comment", commentRoute)
+// app.use("/comment", commentRoute)
 
 
 app.listen(PORT, () => {
