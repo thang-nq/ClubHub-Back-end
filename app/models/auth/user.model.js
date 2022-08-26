@@ -31,7 +31,7 @@ const User = mongoose.model(
         status: {
             type: String,
             enum: ['Pending', 'Active'],
-            default: 'Active'
+            default: 'Pending'
         },
         confirmationCode: {
             type: String,
