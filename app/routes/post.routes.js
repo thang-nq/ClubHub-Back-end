@@ -1,7 +1,8 @@
 const controller = require('./../controllers/post.controller')
-const { authJwt } = require('./../middleware')
-const multer = require('multer')
+const { authJwt, imageUpload } = require('./../middleware')
 const Router = require('express').Router()
+const { uploadImages } = require('./../handler/handleImagesUpload')
+
 
 // CRUD
 
@@ -12,7 +13,7 @@ Router.get("/", controller.getPostList)
 Router.get("/search", controller.getUserPosts)
 
 // Create a post (need accessToken)
-Router.post("/", [multer().none(), authJwt.verifyToken], controller.createNewPost)
+Router.post("/", [authJwt.verifyToken, uploadImages], controller.createNewPost)
 
 // View a post
 Router.get("/:postId", controller.getPost)

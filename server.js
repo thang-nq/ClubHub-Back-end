@@ -24,6 +24,8 @@ app.use(express.json())
 //parse request of Content-type: Application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true, limit: "50mb" }))
 
+
+
 //Connect database
 dbConnect.connect()
 

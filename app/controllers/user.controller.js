@@ -1,7 +1,8 @@
 const db = require('./../models/index')
 const User = db.user
 const { authJwt } = require('./../middleware')
-
+const { avatarUpload } = require('./../middleware')
+const { s3, handler } = require('./../handler/handler')
 
 // Get all users (full info - admin access required)
 exports.getAllUsers = async (req, res) => {
@@ -23,5 +24,22 @@ exports.getUser = async (req, res) => {
         return res.status(200).send(user)
     } catch (err) {
         return res.status(500).send(err)
+    }
+}
+
+
+
+exports.updateUserAvatar = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).send({ error: "Need a file (jpg, jpeg, png) to upload" })
+        }
+        const user = await User.findById(req.userId)
+        user.avatarUrl = req.file.location
+        const saveUser = await user.save()
+        return res.status(200).send(saveUser)
+
+    } catch (error) {
+        return res.status(500).send(error.message)
     }
 }
