@@ -34,9 +34,10 @@ exports.updateUserAvatar = async (req, res) => {
         if (!req.file) {
             return res.status(400).send({ error: "Need a file (jpg, jpeg, png) to upload" })
         }
-        const user = await User.findByIdAndUpdate(req.userId, { "avatarUrl": req.file.location })
-
-        return res.status(200).send(user)
+        const user = await User.findById(req.userId)
+        user.avatarUrl = req.file.location
+        const saveUser = await user.save()
+        return res.status(200).send(saveUser)
 
     } catch (error) {
         return res.status(500).send(error.message)
