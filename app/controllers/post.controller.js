@@ -1,7 +1,12 @@
 const db = require('./../models')
-const handler = require('./../handler/handler')
+const { handler } = require('./../handler/handler')
+
+const multer = require('multer')
 const Post = db.post
 const User = db.user
+
+
+
 
 // Get a post by id
 exports.getPost = async (req, res) => {
@@ -42,15 +47,27 @@ exports.getUserPosts = async (req, res) => {
 }
 
 
+
+
+
 // Add new post
 exports.createNewPost = async (req, res) => {
     try {
-        console.log(req.userId)
-        console.log(req.body)
+
+        const uploadData = req.files
+        const imageURLs = []
+        if (uploadData) {
+            uploadData.forEach(imgData => {
+                imageURLs.push(imgData.location)
+            })
+        }
+
+        // Create post
         const newPost = new Post({
             author: req.userId,
             content: req.body.content,
-            images: req.body.images
+            location: req.body.location,
+            images: imageURLs
         })
         newPost.createAt = handler.getCurrentTime()
         const user = await User.findById(req.userId)
@@ -58,12 +75,13 @@ exports.createNewPost = async (req, res) => {
             console.log("author not found")
             return res.status(404).send({ message: "Couldn't create post, user does not exist" })
         }
-        console.log('found author')
+
         newPost.authorUsername = user.username
         const savedPost = await newPost.save()
+        console.log(`A new post has been created by ${user.username}`)
         return res.status(200).send(savedPost)
     } catch (err) {
-        return res.status(500).send(err)
+        return res.status(500).send({ message: err })
     }
 
 }
