@@ -6,7 +6,7 @@ const User = db.user
 // Get a post by id
 exports.getPost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId)
+        const post = await Post.findById(req.params.postId).populate("likes", "username")
         if (!post) {
             return res.status(404).send({ message: "Post is not found" })
         }
@@ -19,7 +19,7 @@ exports.getPost = async (req, res) => {
 // Get all post
 exports.getPostList = async (req, res) => {
     try {
-        const postList = await Post.find()
+        const postList = await Post.find().populate("likes", "username")
         return res.status(200).send(postList)
     } catch (err) {
         return res.status(500).send(err)
@@ -34,7 +34,7 @@ exports.getUserPosts = async (req, res) => {
         if (!username_query) {
             return res.status(401).send({ message: "Missing query params" })
         }
-        const postList = await Post.find({ authorUsername: username_query })
+        const postList = await Post.find({ authorUsername: username_query }).populate("likes", "username")
         return res.status(200).send(postList)
     } catch (err) {
         return res.status(500).send({ message: `Error! ${err.message}` })
