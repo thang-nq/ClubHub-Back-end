@@ -10,13 +10,13 @@ const User = db.user
 exports.signup = (req, res) => {
 
     //If pass the check, generate a token base on email address
-    // const rmitEmail = req.body.email.toLowerCase()
+    const username = req.body.username.toLowerCase()
     // return res.status(200).send({ rmitEmail })
     const token = jwt.sign({ email: req.body.email }, process.env.SECRET)
     const user = new User({
         email: req.body.email,
         name: req.body.name,
-        username: req.body.username,
+        username: username,
         avatarUrl: "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250",
         gender: req.body.gender,
         dob: req.body.dob,
