@@ -13,11 +13,12 @@ exports.signup = (req, res) => {
     const username = req.body.username.toLowerCase()
     // return res.status(200).send({ rmitEmail })
     const token = jwt.sign({ email: req.body.email }, process.env.SECRET)
+    const fullName = req.body.name.trim().replace(" ", "+")
     const user = new User({
         email: req.body.email,
-        name: req.body.name,
+        name: req.body.name.trim(),
         username: username,
-        avatarUrl: "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250",
+        avatarUrl: `https://ui-avatars.com/api/?name=${fullName}`,
         gender: req.body.gender,
         dob: req.body.dob,
         phone: req.body.phone,
@@ -31,11 +32,11 @@ exports.signup = (req, res) => {
             return res.status(500).send(err)
         }
 
-        // nodemailer.sendConfirmationEmail(
-        //     user.name,
-        //     user.email,
-        //     user.confirmationCode
-        // )
+        nodemailer.sendConfirmationEmail(
+            user.name,
+            user.email,
+            user.confirmationCode
+        )
         return res.status(200).send({ message: `Sign up as ${user.roles} successfully! Please check your email` })
     })
 

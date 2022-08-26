@@ -26,8 +26,8 @@ checkDuplicateEmail = (req, res, next) => {
 
 // Check username duplication
 checkDuplicateUsername = (req, res, next) => {
-    // Lowercase before processing
-    const reqUsername = req.body.username.toLowerCase()
+    // process username before query
+    const reqUsername = req.body.username.toLowerCase().replaceAll(" ", "")
     User.findOne({
         username: reqUsername
     }).exec((err, user) => {
