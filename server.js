@@ -8,7 +8,7 @@ const postRoute = require('./app/routes/post.routes')
 const authRoute = require('./app/routes/auth.routes')
 const userRoute = require('./app/routes/user.routes')
 const commentRoute = require('./app/routes/comment.routes')
-
+const morgan = require('morgan')
 //env
 env.config()
 
@@ -16,6 +16,7 @@ env.config()
 //PORT
 const PORT = process.env.PORT || 8080
 
+app.use(morgan('short'))
 //Allow CORS
 app.use(cors());
 
