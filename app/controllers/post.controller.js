@@ -24,7 +24,7 @@ exports.getPost = async (req, res) => {
 // Get all post
 exports.getPostList = async (req, res) => {
     try {
-        const postList = await Post.find().populate("likes", "username")
+        const postList = await Post.find().populate("likes author", "username avatarUrl")
         return res.status(200).send(postList)
     } catch (err) {
         return res.status(500).send(err)
@@ -76,7 +76,7 @@ exports.createNewPost = async (req, res) => {
             return res.status(404).send({ message: "Couldn't create post, user does not exist" })
         }
 
-        newPost.authorUsername = user.username
+
         const savedPost = await newPost.save()
         console.log(`A new post has been created by ${user.username}`)
         return res.status(200).send(savedPost)
@@ -123,14 +123,18 @@ exports.updatePost = (req, res) => {
 exports.deletePost = async (req, res) => {
     try {
         const postToDelete = await Post.findById(req.params.postId)
+        const awsKeyToDetele = []
         if (!postToDelete) {
             return res.status(404).send({ message: "Delete failed! Post not found" })
         }
         // Convert mongodb objectid to string before compare
         if (req.userId === postToDelete.author.toString()) {
             postToDelete.delete()
+            awsKeyToDetele = postToDelete.images
+
             return res.status(200).send({ message: "Delete post successful" })
         }
+
 
         return res.status(402).send({ message: `Delete post ${req.params.postId} unsuccessful` })
     } catch (err) {

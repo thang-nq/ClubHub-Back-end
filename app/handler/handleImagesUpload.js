@@ -1,5 +1,5 @@
 const env = require('dotenv')
-const { S3Client } = require('@aws-sdk/client-s3')
+const { S3Client, DeleteObjectCommand } = require('@aws-sdk/client-s3')
 const multer = require('multer')
 const multerS3 = require('multer-s3')
 const { v4: uuidv4 } = require('uuid');
@@ -14,6 +14,19 @@ const s3 = new S3Client({
     }
 })
 
+// Delete an images
+const deleteImage = key => {
+    try {
+        s3.send(new DeleteObjectCommand(key)).then(result => {
+            return result
+        })
+    } catch (error) {
+        console.log("Error", error)
+    }
+}
+
+
+//Filter file with jpeg, jpg, png
 const filefilter = (req, file, cb) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
         cb(null, true)
@@ -21,7 +34,7 @@ const filefilter = (req, file, cb) => {
         cb(null, false)
     }
 }
-//For uploading avatar
+//For uploading avatar - single file
 const uploadAvatar = multer({
     storage: multerS3({
         s3: s3,
@@ -39,7 +52,7 @@ const uploadAvatar = multer({
 }).single('useravatar')
 
 
-//Multiple images uploading
+//Multiple images uploading - max 5 images
 const uploadImages = multer({
     storage: multerS3({
         s3: s3,
@@ -56,4 +69,4 @@ const uploadImages = multer({
     fileFilter: filefilter
 }).array("images", 5)
 
-module.exports = { uploadAvatar, uploadImages }
+module.exports = { uploadAvatar, uploadImages, deleteImage }

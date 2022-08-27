@@ -11,8 +11,6 @@ const Post = mongoose.model(
             ref: "User",
             required: true
         },
-
-        authorUsername: String,
         location: String,
 
         content: {
