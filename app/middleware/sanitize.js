@@ -57,9 +57,20 @@ const sanitizeSigninRequest = (req, res, next) => {
     next()
 }
 
+//Check if create club request body is valid
+const sanitizeClubRequest = (req, res, next) => {
+    if (!req.body.name || !req.body.email || !req.body.description) {
+
+        return res.status(400).send({ message: "Missing one or more compulsory parameters(name, description, email)" })
+    }
+
+    next()
+}
+
 const sanitize = {
     sanitizeSignupRequest,
-    sanitizeSigninRequest
+    sanitizeSigninRequest,
+    sanitizeClubRequest
 }
 
 module.exports = sanitize;
