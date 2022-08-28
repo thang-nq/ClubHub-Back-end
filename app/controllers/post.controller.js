@@ -11,7 +11,17 @@ const User = db.user
 // Get a post by id
 exports.getPost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId).populate("likes", "username")
+        const post = await Post.findById(req.params.postId).populate("author", "username avatarUrl")
+        await post.populate({
+            path: "comments",
+            select: "author content createAt",
+            populate: {
+                path: "author",
+                model: "User",
+                select: "username avatarUrl"
+            }
+
+        })
         if (!post) {
             return res.status(404).send({ message: "Post is not found" })
         }
@@ -24,7 +34,17 @@ exports.getPost = async (req, res) => {
 // Get all post
 exports.getPostList = async (req, res) => {
     try {
-        const postList = await Post.find().populate("likes author", "username avatarUrl")
+        const postList = await Post.find().populate("author", "username avatarUrl").populate({
+            path: "comments",
+            select: "author content createAt",
+            populate: {
+                path: "author",
+                model: "User",
+                select: "username avatarUrl"
+            }
+
+        })
+
         return res.status(200).send(postList)
     } catch (err) {
         return res.status(500).send(err)
