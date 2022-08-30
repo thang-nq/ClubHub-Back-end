@@ -141,7 +141,7 @@ exports.createNewPost = async (req, res) => {
             images: imageURLs
         })
         newPost.createAt = handler.getCurrentTime()
-        newPost.viewMode = req.body.viewMode.toLowerCase().trim() || "public"
+        newPost.viewMode = req.body.viewMode || "public"
         const user = await User.findById(req.userId)
         if (!user) {
             console.log("author not found")
