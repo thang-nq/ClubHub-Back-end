@@ -39,7 +39,7 @@ module.exports.sendPasswordResetEmail = (name, email, passwordResetToken) => {
         html: `<h1>Password Reset</h1>
         <h2>Hello ${name}</h2>
         <p>You just requested an password reset. Please click the button below to reset your password, this action will expire after 5 minutes.</p>
-        <a href=http://localhost:8080/api/auth/password-reset/${passwordResetToken}> Click here</a>
+        <a href=https://rmit-club-dhyty.ondigitalocean.app/api/auth/password-reset/${passwordResetToken}> Click here</a>
         </div>`
 
     })
