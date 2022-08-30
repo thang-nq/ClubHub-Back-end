@@ -64,7 +64,7 @@ const sanitizeSigninRequest = (req, res, next) => {
 
 //Check if create club request body is valid
 const sanitizeClubRequest = (req, res, next) => {
-    if (!req.body.name) {
+    if (!req.body.name || !req.body.email || req.body.description) {
         return res.status(400).send({ message: "Missing one or more compulsory parameters(name, description, email)" })
     }
     const clubname = req.body.name.trim()
@@ -77,8 +77,8 @@ const sanitizeClubRequest = (req, res, next) => {
         if (club) {
             return res.status(401).send({ message: "error! club name already exist" })
         }
-        return next()
     })
+    return next()
 }
 
 const sanitizePasswordReset = (req, res, next) => {

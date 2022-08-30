@@ -162,6 +162,10 @@ exports.resetPasswordPayload = async (req, res) => {
         if (!user) {
             return res.status(404).send(`<h2>Error: User not found</h2>`)
         }
+        const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
+        if (!passwordTest.test(req.body.password)) {
+            return res.send("Password is not strong enough")
+        }
 
         user.password = bcrypt.hashSync(req.body.password, 8)
         await pwResetToken.delete()
