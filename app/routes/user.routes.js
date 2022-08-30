@@ -7,12 +7,15 @@ const Router = require("express").Router()
 
 
 //Get all user
-Router.get("/users", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUsers)
+Router.get("/getall", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUsers)
 
 // User - get personal information
-Router.get("/user", authJwt.verifyToken, controller.getUser)
+Router.get("/profile", authJwt.verifyToken, controller.getUser)
 
 // Upload user avatar
-Router.post("/user/avatar", [authJwt.verifyToken, uploadAvatar], controller.updateUserAvatar)
+Router.post("/profile/avatar", [authJwt.verifyToken, uploadAvatar], controller.updateUserAvatar)
+
+// User - Update personal information
+Router.put("/user", [authJwt.verifyToken], controller.updateUser)
 
 module.exports = Router

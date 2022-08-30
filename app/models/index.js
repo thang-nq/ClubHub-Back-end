@@ -10,4 +10,6 @@ db.post = require('./Post/post.model')
 db.club = require('./Club/club.model')
 db.comment = require('./Comment/comment.model')
 db.event = require('./Event/event.model')
+db.joinrequest = require('./Club/JoinClubRequest/request.model')
+db.passwordreset = require('./auth/passwordreset')
 module.exports = db

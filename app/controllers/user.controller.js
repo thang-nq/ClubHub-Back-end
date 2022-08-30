@@ -27,8 +27,23 @@ exports.getUser = async (req, res) => {
     }
 }
 
+// User - Update personal information
+exports.updateUser = async (req, res) => {
+
+    // All error handled at verify token
+    try {
+        const userToUpdate = await User.findById(req.userId)
+        userToUpdate.name = req.body.name || userToUpdate.name
+        userToUpdate.dob = req.body.dob || userToUpdate.dob
+        userToUpdate.phone = req.body.phone || userToUpdate.phone
+        userToUpdate.gender = req.body.gender || userToUpdate.gender
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
 
 
+// User - Update user avatar
 exports.updateUserAvatar = async (req, res) => {
     try {
         if (!req.file) {

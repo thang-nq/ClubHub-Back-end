@@ -7,20 +7,31 @@ const Club = mongoose.model(
             required: true
         },
 
+        status: {
+            type: String,
+            enum: ["Pending", "Active"],
+            default: "Pending"
+        },
+
+        acceptingMember: {
+            type: String,
+            enum: ["yes", "no"],
+            default: "yes"
+        },
+
         slogan: {
             type: String,
-            default: "Welcome to our club!"
+            default: "Welcome to our club!",
+            required: true
         },
 
         description: {
             type: String,
-            require: true
+            default: "This is a club at RMIT",
+            required: true
         },
 
-        logoUrl: {
-            type: String,
-            default: "https://ui-avatars.com/api/?name=RMIT"
-        },
+        logoUrl: String,
 
         members: [
             {
@@ -37,7 +48,8 @@ const Club = mongoose.model(
 
         featureImages: [
             {
-                type: String
+                url: String,
+                key: String
             }
         ],
 

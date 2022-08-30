@@ -30,7 +30,7 @@ const User = mongoose.model(
         phone: String,
         status: {
             type: String,
-            enum: ['Pending', 'Active'],
+            enum: ['Pending', 'Active', 'Banned'],
             default: 'Pending'
         },
         confirmationCode: {
@@ -40,7 +40,7 @@ const User = mongoose.model(
 
         roles: {
             type: String,
-            enum: ["user", "clubprez", "admin"],
+            enum: ["user", "clubprez", "clubcw", "admin"],
             default: 'user',
             require: true
         }

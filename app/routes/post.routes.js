@@ -12,13 +12,18 @@ Router.get("/", controller.getPostList)
 // Search post
 Router.get("/search", controller.getUserPosts)
 
-// Create a post (need accessToken)
-Router.post("/", [authJwt.verifyToken, uploadImages], controller.createNewPost)
+// Create a club post 
+Router.post("/:clubId", [authJwt.verifyToken, authJwt.isClubCW, authJwt.isClubMember, uploadImages], controller.createNewClubPost)
 
+// Create a normal post 
+Router.post("/", [authJwt.verifyToken, uploadImages], controller.createNewPost)
 // View a post
 Router.get("/:postId", controller.getPost)
 
-// Delete a post (require token)
+// Update a post
+Router.put("/:postId", [authJwt.verifyToken, uploadImages], controller.updatePost)
+
+// Delete a post 
 Router.delete("/:postId", authJwt.verifyToken, controller.deletePost)
 
 

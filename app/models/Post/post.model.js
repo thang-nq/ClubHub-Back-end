@@ -11,16 +11,26 @@ const Post = mongoose.model(
             ref: "User",
             required: true
         },
+
+        club: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Club"
+        },
+
+        viewMode: {
+            type: String,
+            enum: ["public", "internal"],
+            default: "public"
+        },
+
         location: String,
 
-        content: {
-            type: String,
-            required: true
-        },
+        content: String,
 
         images: [
             {
-                type: String
+                url: String,
+                key: String
             }
         ],
 

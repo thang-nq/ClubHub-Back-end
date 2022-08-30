@@ -1,7 +1,12 @@
+const db = require("./../models")
+const Club = db.club
 
+// Regex
 const emailRegex = "^[A-Za-z0-9._%+-]+@rmit.edu.vn$"
 const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
 const usernameRegex = "^[A-Za-z0-9._-]{8,16}$"
+//
+
 
 const sanitizeSignupRequest = (req, res, next) => {
     //Check missing input
@@ -43,34 +48,55 @@ const sanitizeSignupRequest = (req, res, next) => {
 
 const sanitizeSigninRequest = (req, res, next) => {
     if (!req.body.email || !req.body.password) {
-        return res.status(400).send({ message: "Missing parameter(s)" })
+        return res.status(401).send({ message: "Missing parameter(s)" })
     }
 
     if (!req.body.email.match(emailRegex)) {
-        return res.status(400).send({ message: "Require rmit email format" })
+        return res.status(401).send({ message: "Require rmit email format" })
     }
 
     if (!passwordTest.test(req.body.password)) {
         return res.status(400).send({ message: "Password not meet the requirement" })
     }
 
-    next()
+    return next()
 }
 
 //Check if create club request body is valid
 const sanitizeClubRequest = (req, res, next) => {
-    if (!req.body.name || !req.body.email || !req.body.description) {
-
+    if (!req.body.name) {
         return res.status(400).send({ message: "Missing one or more compulsory parameters(name, description, email)" })
     }
+    const clubname = req.body.name.trim()
 
-    next()
+    Club.findOne({ name: clubname }).exec((error, club) => {
+        if (error) {
+            return res.status(500).send({ message: error })
+        }
+
+        if (club) {
+            return res.status(401).send({ message: "error! club name already exist" })
+        }
+        return next()
+    })
+}
+
+const sanitizePasswordReset = (req, res, next) => {
+    if (!req.body.email) {
+        return res.status(401).send({ message: "missing email parameter" })
+    }
+    if (!req.body.email.match(emailRegex)) {
+        return res.status(401).send({ message: "Fail! required rmit email" })
+    }
+
+    return next()
 }
 
 const sanitize = {
     sanitizeSignupRequest,
     sanitizeSigninRequest,
-    sanitizeClubRequest
+    sanitizeClubRequest,
+    sanitizePasswordReset
 }
 
 module.exports = sanitize;

@@ -3,22 +3,21 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const nodemailer = require('./../config/nodemailer.config')
 const User = db.user
-
+const PasswordReset = db.passwordreset
 
 
 //Signup controller
-exports.signup = (req, res) => {
+exports.signup = async (req, res) => {
 
     //If pass the check, generate a token base on email address
-    const username = req.body.username.toLowerCase()
+    const username = req.body.username.toLowerCase().trim()
     // return res.status(200).send({ rmitEmail })
-    const token = jwt.sign({ email: req.body.email }, process.env.SECRET)
-    const fullName = req.body.name.trim().replace(" ", "+")
+    const token = jwt.sign({ email: req.body.email.toLowerCase() }, process.env.SECRET)
     const user = new User({
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         name: req.body.name.trim(),
         username: username,
-        avatarUrl: `https://ui-avatars.com/api/?name=${fullName}`,
+        avatarUrl: `https://source.boringavatars.com/beam/120/${username}`,
         gender: req.body.gender,
         dob: req.body.dob,
         phone: req.body.phone,
@@ -106,4 +105,70 @@ exports.verifyUser = (req, res) => {
             })
         })
         .catch((e) => console.log("error", e))
+}
+
+// Password reset init - send email
+exports.resetPassword = async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.body.email.toLowerCase() })
+        if (!user) {
+            return res.status(404).send({ message: "User not found!" })
+        }
+
+        const token = jwt.sign({ userId: user._id, email: user.email }, process.env.SECRET)
+        await PasswordReset.updateOne({ userId: user.id }, { $set: { token: token, userId: user.id } }, { upsert: true })
+
+        nodemailer.sendPasswordResetEmail(user.name, user.email, token)
+        return res.status(200).send({ message: "Please check your email for password reset instruction" })
+    } catch (error) {
+        return res.status(500).send({ message: error.message })
+    }
+
+}
+
+// Password reset verify and reset password
+exports.verifyPasswordReset = async (req, res) => {
+    try {
+        const token = req.params.token
+        let decoded = jwt.verify(token, process.env.SECRET)
+
+        const pwrstoken = await PasswordReset.findOne({ userId: decoded.userId })
+        if (!pwrstoken) {
+            return res.send(`<h2>Error this action is expired, please make another request</h2>`)
+        }
+
+        const params = {
+
+            Message: `Hello ${decoded.email}`,
+            token: token
+        }
+        return res.render('resetpw', params)
+    } catch (error) {
+        return res.status(500).send(`<h2>Error ${error.message}</h2>`)
+    }
+
+
+}
+
+exports.resetPasswordPayload = async (req, res) => {
+    try {
+        // const token = req.params.token
+        // const pwResetToken = await PasswordReset.findOne({ token: token })
+        // if (!pwResetToken) {
+        //     return res.status(404).send(`<h2>Error: Token not found on the server</h2>`)
+        // }
+
+        // const user = await User.findById(pwResetToken.userId)
+        // if (!user) {
+        //     return res.status(404).send(`<h2>Error: User not found</h2>`)
+        // }
+
+        // user.password = bcrypt.hashSync(req.body.password, 8)
+        // await pwResetToken.delete()
+        console.log(req.body)
+        return res.send(`<h2>Password change success!</h2>`)
+    } catch (error) {
+        return res.status(500).send(`<h2>Error: ${error.message}</h2>`)
+    }
+
 }

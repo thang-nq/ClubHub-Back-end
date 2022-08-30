@@ -14,10 +14,14 @@ const s3 = new S3Client({
     }
 })
 
-// Delete an images
-const deleteImage = key => {
+// Delete an images with key 
+const deleteImage = (key) => {
+
     try {
-        s3.send(new DeleteObjectCommand(key)).then(result => {
+        s3.send(new DeleteObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key
+        })).then(result => {
             return result
         })
     } catch (error) {
@@ -28,12 +32,15 @@ const deleteImage = key => {
 
 //Filter file with jpeg, jpg, png
 const filefilter = (req, file, cb) => {
+
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg' || file.mimetype === 'image/png') {
         cb(null, true)
     } else {
         cb(null, false)
     }
 }
+
+
 //For uploading avatar - single file
 const uploadAvatar = multer({
     storage: multerS3({
@@ -69,4 +76,22 @@ const uploadImages = multer({
     fileFilter: filefilter
 }).array("images", 5)
 
-module.exports = { uploadAvatar, uploadImages, deleteImage }
+// For uploading club logo - single file
+const uploadLogo = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_BUCKET_NAME,
+        metadata: function (req, file, cb) {
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: function (req, file, cb) {
+            cb(null, req.params.clubId + "logo")
+        },
+        acl: "public-read-write",
+        contentType: multerS3.AUTO_CONTENT_TYPE
+    }),
+    fileFilter: filefilter
+
+}).single('logo')
+
+module.exports = { uploadAvatar, uploadImages, deleteImage, uploadLogo, s3 }

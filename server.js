@@ -8,7 +8,10 @@ const postRoute = require('./app/routes/post.routes')
 const authRoute = require('./app/routes/auth.routes')
 const userRoute = require('./app/routes/user.routes')
 const commentRoute = require('./app/routes/comment.routes')
-const morgan = require('morgan')
+const clubRoute = require('./app/routes/club.routes')
+const morgan = require('morgan');
+const multer = require('multer');
+
 //env
 env.config()
 
@@ -26,15 +29,18 @@ app.use(express.json())
 //parse request of Content-type: Application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true, limit: "50mb" }))
 
-
+//SSR
+app.set('views', './views')
+app.set('view engine', 'pug')
 
 //Connect database
 dbConnect.connect()
 
 //Routes
-app.use("/api", userRoute)
+app.use("/api/user", userRoute)
 app.use("/api/posts", postRoute)
 app.use("/api/auth", authRoute)
+app.use("/api/clubs", clubRoute)
 
 // Comment 
 app.use("/api/comment", commentRoute);

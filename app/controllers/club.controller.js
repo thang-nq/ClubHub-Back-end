@@ -1,4 +1,5 @@
 const db = require('./../models')
+const { DeleteObjectCommand } = require('@aws-sdk/client-s3')
 const Club = db.club
 const User = db.user
 
@@ -28,18 +29,34 @@ exports.getClub = async (req, res) => {
 // Create a new club after verify the user is club president
 exports.createClub = async (req, res) => {
     try {
-
-        const logo = req.file.filename || `https://ui-avatars.com/api/?name=${req.body.name}&background=0D8ABC&color=fff&size=128`
-
+        const processedName = req.body.name.replaceAll(" ", "")
+        const logo = `https://source.boringavatars.com/bauhaus/120/${processedName}`
         const club = new Club({
-            name: req.body.name,
+            name: req.body.name.trim(),
             slogan: req.body.slogan,
+            description: req.body.description,
             logoUrl: logo,
             president: req.userId,
-            email: req.body.email,
+            email: req.body.email.toLowerCase().trim(),
         })
         // Club president also count as member
         club.members.push(req.userId)
+        const savedClub = await club.save()
+        return res.status(200).send(savedClub)
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
+
+// Update a club opening status, require admin account
+exports.setClubStatus = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.id)
+        if (!club) {
+            return res.status(404).send({ message: "Club not found!" })
+        }
+        club.status = req.body.status
         const savedClub = await club.save()
         return res.status(200).send(savedClub)
     } catch (error) {
@@ -47,6 +64,59 @@ exports.createClub = async (req, res) => {
     }
 }
 
-exports.setClubStatus = async (req, res) => {
+// Delete a club, require admin account
+exports.deleteClub = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.id)
+        if (!club) {
+            return res.status(404).send({ message: "Club not found!" })
+        }
+
+        await club.remove()
+        return res.status(200).send({ message: "Club deleted!" })
+    } catch (error) {
+        return res.status(500).send({ message: "Internal error!" })
+    }
+}
+
+// Update club logo, require president account
+exports.updateClubLogo = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.id)
+        if (!club) {
+            return res.status(404).send({ message: "Club not found!" })
+        }
+        // Check if the user is club president
+        if (req.userId != club.president._id.toString) {
+            return res.status(403).send({ message: "You are not the president of this club, cant update" })
+        }
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+}
+
+// Update club data, require president account
+exports.updateClub = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.id)
+        if (!club) {
+            return res.status(404).send({ message: "Club not found!" })
+        }
+        if (club.president !== req.userId) {
+            return res.status(401).send({ message: "You are not the president of this club!" })
+        }
+        club.name = req.body.name || club.name
+        club.slogan = req.body.slogan || club.slogan
+        club.description = req.body.description || club.description
+        club.email = req.body.email || club.email
+        const savedClub = await club.save()
+        return res.status(200).send(savedClub)
+    } catch (error) {
+        return res.status(500).send({ message: "Internal error!" })
+    }
+}
+
+// Send request to a join a club
+exports.requestToJoinClub = async (req, res) => {
 
 }

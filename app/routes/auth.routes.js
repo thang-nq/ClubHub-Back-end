@@ -1,4 +1,4 @@
-const { verifySignUp, sanitize } = require('./../middleware')
+const { verifySignUp, sanitize, authJwt } = require('./../middleware')
 const controller = require('./../controllers/auth.controller')
 const Router = require('express').Router();
 
@@ -26,5 +26,14 @@ Router.post(
 Router.get(
     "/confirm/:confirmationCode", controller.verifyUser
 )
+
+// Request password reset and send email
+Router.post("/password-reset", sanitize.sanitizePasswordReset, controller.resetPassword)
+
+//Password reset form render
+Router.get("/password-reset/:token", controller.verifyPasswordReset)
+
+//Send password reset payload
+Router.post("/password-reset/confirm/:token", controller.resetPasswordPayload)
 
 module.exports = Router

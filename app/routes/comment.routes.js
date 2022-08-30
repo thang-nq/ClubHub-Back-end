@@ -3,7 +3,7 @@ const { authJwt } = require('./../middleware')
 const router = require('express').Router();
 
 // add comment
-router.post("/", authJwt.verifyToken, commentController.addComment);
+router.post("/", authJwt.verifyToken, authJwt.isAdmin, commentController.addComment);
 
 router.get("/", commentController.getAllComments);
 
