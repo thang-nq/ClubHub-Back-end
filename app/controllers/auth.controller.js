@@ -67,7 +67,7 @@ exports.signin = async (req, res) => {
     }
 
     // If user account is not active
-    if (user.status != 'Active') {
+    if (user.accstatus != 'Active') {
         return res.status(401).send({ message: "Please check your email to activate this account!" })
     }
 
@@ -95,7 +95,7 @@ exports.verifyUser = (req, res) => {
                 return res.status(404).send({ message: 'User not found.' })
             }
 
-            user.status = "Active"
+            user.accstatus = "Active"
             user.save((err) => {
                 if (err) {
                     return res.status(500).send({ message: err })
@@ -139,7 +139,7 @@ exports.verifyPasswordReset = async (req, res) => {
 
         const params = {
 
-            Message: `Hello ${decoded.email}`,
+            Message: `${decoded.email}`,
             token: token
         }
         return res.render('resetpw', params)
@@ -152,19 +152,19 @@ exports.verifyPasswordReset = async (req, res) => {
 
 exports.resetPasswordPayload = async (req, res) => {
     try {
-        // const token = req.params.token
-        // const pwResetToken = await PasswordReset.findOne({ token: token })
-        // if (!pwResetToken) {
-        //     return res.status(404).send(`<h2>Error: Token not found on the server</h2>`)
-        // }
+        const token = req.params.token
+        const pwResetToken = await PasswordReset.findOne({ token: token })
+        if (!pwResetToken) {
+            return res.status(404).send(`<h2>Error: Token not found on the server</h2>`)
+        }
 
-        // const user = await User.findById(pwResetToken.userId)
-        // if (!user) {
-        //     return res.status(404).send(`<h2>Error: User not found</h2>`)
-        // }
+        const user = await User.findById(pwResetToken.userId)
+        if (!user) {
+            return res.status(404).send(`<h2>Error: User not found</h2>`)
+        }
 
-        // user.password = bcrypt.hashSync(req.body.password, 8)
-        // await pwResetToken.delete()
+        user.password = bcrypt.hashSync(req.body.password, 8)
+        await pwResetToken.delete()
         console.log(req.body)
         return res.send(`<h2>Password change success!</h2>`)
     } catch (error) {

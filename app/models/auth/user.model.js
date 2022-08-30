@@ -28,9 +28,10 @@ const User = mongoose.model(
             default: 'Other'
         },
         phone: String,
-        status: {
+        accstatus: {
             type: String,
-            enum: ['Pending', 'Active', 'Banned'],
+            enum: ['Pending', 'Active'],
+            required: true,
             default: 'Pending'
         },
         confirmationCode: {
