@@ -58,3 +58,12 @@ exports.updateUserAvatar = async (req, res) => {
         return res.status(500).send(error.message)
     }
 }
+
+// User - test route
+exports.testTemp = async (req, res) => {
+    try {
+        return res.render('test')
+    } catch (error) {
+        return res.status(500).send()
+    }
+}

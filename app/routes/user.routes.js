@@ -18,4 +18,7 @@ Router.post("/profile/avatar", [authJwt.verifyToken, uploadAvatar], controller.u
 // User - Update personal information
 Router.put("/user", [authJwt.verifyToken], controller.updateUser)
 
+// test route
+Router.get("/", controller.testTemp)
+
 module.exports = Router

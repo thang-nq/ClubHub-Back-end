@@ -164,7 +164,7 @@ exports.resetPasswordPayload = async (req, res) => {
         }
         const passwordTest = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})")
         if (!passwordTest.test(req.body.password)) {
-            return res.send("Password is not strong enough")
+            return res.send("Password is not match format")
         }
 
         user.password = bcrypt.hashSync(req.body.password, 8)

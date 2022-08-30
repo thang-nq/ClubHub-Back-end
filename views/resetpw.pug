@@ -7,6 +7,16 @@ head
   link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css')
   meta(charset='utf-8')
   meta(name='viewport' content='width=device-width, initial-scale=1')
+  script.
+    function validateForm() {
+    let x = document.forms["form"]["password"].value;
+    let y = document.forms["form"]["re-typepassword"].value;
+    
+    if (!x.match(y)) {
+    alert("Retype password not match");
+    return false;
+    }
+    }
   body
     .modal-dialog
         .modal-content
@@ -20,7 +30,7 @@ head
           // Modal Body
           .modal-body
             //#editForm.form(role='form' method='GET' action='https://www.google.com/')
-            form(role='form' action=`/api/auth/password-reset/confirm/${token}`, method="post")
+            form(role='form' action=`/api/auth/password-reset/confirm/${token}`, method="post" onsubmit='return validateForm()')
               div.form-group
                 label(for='name') New Password
                 input#password.form-control(type='password', placeholder='New password' name='password')
