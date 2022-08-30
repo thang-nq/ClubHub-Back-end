@@ -166,6 +166,7 @@ exports.resetPasswordPayload = async (req, res) => {
         user.password = bcrypt.hashSync(req.body.password, 8)
         await pwResetToken.delete()
         console.log(req.body)
+        await user.save()
         return res.send(`<h2>Password change success!</h2>`)
     } catch (error) {
         return res.status(500).send(`<h2>Error: ${error.message}</h2>`)

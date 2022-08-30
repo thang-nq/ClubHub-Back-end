@@ -3,16 +3,17 @@
 
 head
   meta(charset='utf-8')
-  title Title2
+  title RMIT ClubHub
   link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css')
-
+  meta(charset='utf-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1')
   body
     .modal-dialog
         .modal-content
           // Modal Header
           .modal-header
             button.close(type="button", data-dismiss="modal")
-              span(aria-hidden="true") ×
+              span(aria-hidden="true")
               span.sr-only Close
             h4#myModalLabel.modal-title
               | Reset password #{email}
@@ -31,7 +32,7 @@ head
                 | Close
           // Modal Footer
           .modal-footer
-            h4 footer
+            h4 powered by @rmitclubhub
 
     // footer
     p.foot.text-xs-center @2022 RMIT Club Hub
