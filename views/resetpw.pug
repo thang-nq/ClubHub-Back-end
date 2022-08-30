@@ -32,11 +32,9 @@ head
             //#editForm.form(role='form' method='GET' action='https://www.google.com/')
             form(role='form' action=`/api/auth/password-reset/confirm/${token}`, method="post" onsubmit='return validateForm()')
               div.form-group
-                label(for='name') New Password
+                label(for='password') New Password
                 input#password.form-control(type='password', placeholder='New password' name='password')
               div.form-group
-                label(for='email') Confirmation
-                input#password.form-control(type='password', placeholder='Re-type your new password' name='retype-password')
               button.btn.btn-primary(type="submit", name="submit")| Submit
               button.btn.btn-default(type="button", data-dismiss="modal")
                 | Close
