@@ -13,7 +13,7 @@ Router.get("/", controller.getPostList)
 Router.get("/search", controller.getUserPosts)
 
 // Create a club post 
-Router.post("/:clubId", [authJwt.verifyToken, authJwt.isClubCW, authJwt.isClubMember, uploadImages], controller.createNewClubPost)
+Router.post("/clubs/:clubId", [authJwt.verifyToken, authJwt.isClubCW, authJwt.isClubMember, uploadImages], controller.createNewClubPost)
 
 // Create a normal post 
 Router.post("/", [authJwt.verifyToken, uploadImages], controller.createNewPost)
@@ -31,7 +31,7 @@ Router.delete("/:postId", authJwt.verifyToken, controller.deletePost)
 // Interaction routes
 
 // Like a post - require accessToken
-Router.post("/like", authJwt.verifyToken, controller.likePost)
+Router.get("/:postId/like", authJwt.verifyToken, controller.likePost)
 
 
 

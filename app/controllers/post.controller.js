@@ -161,7 +161,7 @@ exports.createNewPost = async (req, res) => {
 // Add like to the post, will unlike the post if that user already like it
 exports.likePost = async (req, res) => {
     try {
-        const post = await Post.findById(req.body.postId)
+        const post = await Post.findById(req.params.postId)
         if (!post) {
             return res.status(404).send({ message: "Failed! Post not found on the server" })
         }
