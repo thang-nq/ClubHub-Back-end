@@ -8,7 +8,7 @@ const Router = require('express').Router();
 Router.post(
     "/signup",
     [
-        // sanitize.sanitizeSignupRequest,
+        sanitize.sanitizeSignupRequest,
         verifySignUp.checkDuplicateEmail,
         verifySignUp.checkDuplicateUsername
     ],
@@ -18,7 +18,7 @@ Router.post(
 //signin route
 Router.post(
     "/signin",
-    // sanitize.sanitizeSigninRequest,
+    sanitize.sanitizeSigninRequest,
     controller.signin
 )
 
