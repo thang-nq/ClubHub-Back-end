@@ -1,8 +1,6 @@
 const db = require('./../models/index')
 const User = db.user
-const { authJwt } = require('./../middleware')
-const { avatarUpload } = require('./../middleware')
-const { s3, handler } = require('./../handler/handler')
+
 
 // Get all users (full info - admin access required)
 exports.getAllUsers = async (req, res) => {

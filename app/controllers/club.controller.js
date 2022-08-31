@@ -6,12 +6,19 @@ const User = db.user
 // Get all clubs data
 exports.getAllClub = async (req, res) => {
     try {
-        const clubs = await Club.find().populate("president", "username avatarUrl")
+        const recruit_query = req.query.recruit
+        if (recruit_query == 'true') {
+            const clubs = await Club.find({ status: "Active", acceptingMember: "yes" }).populate("president", "username avatarUrl")
+            return res.status(200).send(clubs)
+        }
+        const clubs = await Club.find({ status: "Active" }).populate("president", "username avatarUrl")
         return res.status(200).send(clubs)
     } catch (error) {
         return res.status(500).send({ error: error })
     }
 }
+
+
 
 // Get a club data
 exports.getClub = async (req, res) => {

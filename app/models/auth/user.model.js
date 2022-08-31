@@ -11,6 +11,8 @@ const User = mongoose.model(
             required: true
         },
 
+        snumber: String,
+
         username: {
             type: String,
             required: true,

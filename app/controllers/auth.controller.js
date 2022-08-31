@@ -20,6 +20,7 @@ exports.signup = async (req, res) => {
         avatarUrl: `https://source.boringavatars.com/beam/120/${username}`,
         gender: req.body.gender,
         dob: req.body.dob,
+        snumber: req.body.email.split("@")[0],
         phone: req.body.phone,
         roles: req.body.roles,
         password: bcrypt.hashSync(req.body.password, 8),
@@ -177,3 +178,4 @@ exports.resetPasswordPayload = async (req, res) => {
     }
 
 }
+

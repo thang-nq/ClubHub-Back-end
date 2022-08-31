@@ -24,7 +24,7 @@ router.delete("/:id", [authJwt.verifyToken, isAdmin], controller.deleteClub)
 router.post("/:id/join", [authJwt.verifyToken], controller.requestToJoinClub)
 
 // Get a club info
-router.post("/:id", controller.getClub)
+router.get("/:id", controller.getClub)
 
 
 module.exports = router

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const commentSchema = new mongoose.Schema({
 
-    post:{
+    post: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
         required: true
@@ -29,5 +29,5 @@ const commentSchema = new mongoose.Schema({
 
 let Comment = mongoose.model('Comment', commentSchema);
 
-module.exports = {Comment};
+module.exports = Comment;
 

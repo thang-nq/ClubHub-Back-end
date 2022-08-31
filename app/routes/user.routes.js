@@ -6,7 +6,7 @@ const { uploadAvatar } = require('./../handler/handleImagesUpload')
 const Router = require("express").Router()
 
 
-//Get all user
+//Get all user - admin account
 Router.get("/getall", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllUsers)
 
 // User - get personal information

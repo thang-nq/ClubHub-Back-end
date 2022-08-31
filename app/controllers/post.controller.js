@@ -5,7 +5,7 @@ const { deleteImage } = require('./../handler/handleImagesUpload')
 const multer = require('multer')
 const Post = db.post
 const User = db.user
-
+const Comment = db.comment
 
 
 
@@ -239,20 +239,23 @@ exports.deletePost = async (req, res) => {
             return res.status(404).send({ message: "Delete failed! Post not found" })
         }
         // Convert mongodb objectid to string before compare
-        if (req.userId === postToDelete.author.toString()) {
+        if (req.userId !== postToDelete.author.toString()) {
             //Delete the images from s3
-            postToDelete.images.forEach(image => {
-                deleteImage(image.key)
-            })
-
-            const data = await postToDelete.delete()
 
 
-            return res.status(200).send({ message: "Delete post successful", deleted: data })
+
+
+            return res.status(402).send({ message: `Delete post ${req.params.postId} unsuccessful` })
         }
 
+        postToDelete.images.forEach(image => {
+            deleteImage(image.key)
+        })
+        postToDelete.comments.forEach(comment => Comment.findByIdAndDelete())
+        const data = await postToDelete.delete()
+        return res.status(200).send({ message: "Delete post successful", deleted: data })
 
-        return res.status(402).send({ message: `Delete post ${req.params.postId} unsuccessful` })
+
     } catch (err) {
         return res.status(500).send({ message: err })
     }
