@@ -94,4 +94,22 @@ const uploadLogo = multer({
 
 }).single('logo')
 
-module.exports = { uploadAvatar, uploadImages, deleteImage, uploadLogo, s3 }
+
+// For uploading background image - single file upload
+const uploadBackground = multer({
+    storage: multerS3({
+        s3: s3,
+        bucket: process.env.AWS_BUCKET_NAME,
+        metadata: function (req, file, cb) {
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: function (req, file, cb) {
+            cb(null, req.params.clubId + "backgroundimg")
+        },
+        acl: "public-read-write",
+        contentType: multerS3.AUTO_CONTENT_TYPE
+    }),
+    fileFilter: filefilter
+}).single('background')
+
+module.exports = { uploadAvatar, uploadImages, deleteImage, uploadLogo, uploadBackground, s3 }

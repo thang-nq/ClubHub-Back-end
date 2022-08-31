@@ -32,6 +32,7 @@ const Club = mongoose.model(
         },
 
         logoUrl: String,
+        backgroundUrl: String,
 
         members: [
             {

@@ -1,8 +1,8 @@
-const { Comment } = require("./../models/Comment/comment.model");
-
+const db = require('./../models')
+const Comment = db.comment
 const { handler } = require("./../handler/handler");
-const Post = require("../models/Post/post.model");
-const User = require("../models/auth/user.model");
+const Post = db.post
+const User = db.user
 
 const commentController = {
   // adComments
@@ -10,23 +10,27 @@ const commentController = {
     try {
       // check post id and user id
       const post = await Post.findById(req.body.post);
-      const user = await User.findById(req.userId);
       if (!post) {
-        console.log("post id is not valid");
-        return res.status(404).json(err);
+        return res.status(404).send({ message: "Post is not found" });
       }
       // add new comment
+      console.log(post)
       const newComment = new Comment({
-        post: post._id,
+        post: req.body.post,
         content: req.body.content,
-        author: user._id
+        author: req.userId
       });
       newComment.createAt = handler.getCurrentTime();
-      const saveComment = await newComment.save();
-      await post.updateOne({ $push: { comments: saveComment._id } });
-      return res.status(200).send(saveComment);
+      console.log(newComment)
+      //Save comment and link to post
+      await newComment.save();
+
+      post.comments.push(newComment._id)
+      await post.save()
+      //Success
+      return res.status(200).send(newComment);
     } catch (error) {
-      return res.status(500).send({ error: error });
+      return res.status(500).send({ error: "Server error" });
     }
   },
 
@@ -34,9 +38,9 @@ const commentController = {
   getAllComments: async (req, res) => {
     try {
       const comments = await Comment.find();
-      res.status(200).send(comments);
+      return res.status(200).send(comments);
     } catch (error) {
-      res.status(500).json(err);
+      return res.status(500).send(error);
     }
   },
 
@@ -55,9 +59,9 @@ const commentController = {
         return res.status(404).json("Error, you can't update other person comment");
       }
       await comment.updateOne({ $set: { "content": req.body.content } });
-      return res.status(200).json("update successfully !");
+      return res.status(200).send({ message: "Update comment successfully" });
     } catch (error) {
-      return res.status(500).json(err);
+      return res.status(500).send(error);
     }
   },
 
@@ -72,14 +76,14 @@ const commentController = {
       const ownerID = comment.author.toString();
 
       if (req.userId != ownerID) {
-        console.log("user don't have permission to edit");
-        return res.status(404).json(err);
+        return res.status(404).send({ message: "You dont have the permission to delete" });
       }
 
       await Comment.findByIdAndDelete(req.params.id);
-      return res.status(200).json("delete Success");
+
+      return res.status(200).send({ message: "Delete success!" })
     } catch (error) {
-      return res.status(500).json(err);
+      return res.status(500).send(error);
     }
   },
 };

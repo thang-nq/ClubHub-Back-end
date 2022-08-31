@@ -81,7 +81,6 @@ const isClubMember = async (req, res, next) => {
 
             return res.status(404).send({ message: "Not a member of " + club.name })
         }
-        console.log(club)
         return next()
     } catch (error) {
         return res.status(500).send(error)

@@ -20,9 +20,7 @@ const commentSchema = new mongoose.Schema({
         required: true
     },
 
-    createAt: {
-        type: String
-    }
+    createAt: String
 
 
 })

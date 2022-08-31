@@ -1,7 +1,7 @@
 const controller = require('./../controllers/club.controller')
 const { authJwt, sanitize } = require('./../middleware')
 const router = require('express').Router()
-const { uploadLogo } = require('./../handler/handleImagesUpload')
+const { uploadLogo, uploadBackground } = require('./../handler/handleImagesUpload')
 const { isClubPrez, isAdmin } = require('../middleware/authJwt')
 
 // CRUD
@@ -12,19 +12,22 @@ router.get("/", controller.getAllClub)
 router.post("/", [authJwt.verifyToken, authJwt.isClubPrez, sanitize.sanitizeClubRequest], controller.createClub)
 
 //Update a club logo
-router.post("/:id", [authJwt.verifyToken, authJwt.isClubPrez, uploadLogo], controller.updateClubLogo)
+router.post("/:clubId", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadLogo], controller.updateClubLogo)
+
+// Update/Upload a club background image
+router.post("/:clubId", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadBackground], controller.updateClubBackgroundImage)
 
 // Update a club (need accessToken)
-router.put("/:id", [authJwt.verifyToken, authJwt.isClubPrez], controller.updateClub)
+router.put("/:clubId", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember], controller.updateClub)
 
 // Delete a club (need accessToken)
-router.delete("/:id", [authJwt.verifyToken, isAdmin], controller.deleteClub)
+router.delete("/:clubId", [authJwt.verifyToken, isAdmin], controller.deleteClub)
 
 // Request to join a club
-router.post("/:id/join", [authJwt.verifyToken], controller.requestToJoinClub)
+router.post("/:clubId/join", [authJwt.verifyToken], controller.requestToJoinClub)
 
 // Get a club info
-router.get("/:id", controller.getClub)
+router.get("/:clubId", controller.getClub)
 
 
 module.exports = router

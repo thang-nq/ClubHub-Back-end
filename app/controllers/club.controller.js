@@ -23,7 +23,7 @@ exports.getAllClub = async (req, res) => {
 // Get a club data
 exports.getClub = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.id).populate("president members", "username avatarUrl roles")
+        const club = await Club.findById(req.params.clubId).populate("president members", "username avatarUrl roles")
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
@@ -56,14 +56,14 @@ exports.createClub = async (req, res) => {
 }
 
 
-// Update a club opening status, require admin account
+// Update a club opening status, require president account
 exports.setClubStatus = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.id)
+        const club = await Club.findById(req.params.clubId)
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
-        club.status = req.body.status
+        club.acceptingMember = req.body.acceptingMember
         const savedClub = await club.save()
         return res.status(200).send(savedClub)
     } catch (error) {
@@ -74,7 +74,7 @@ exports.setClubStatus = async (req, res) => {
 // Delete a club, require admin account
 exports.deleteClub = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.id)
+        const club = await Club.findById(req.params.clubId)
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
@@ -93,10 +93,26 @@ exports.updateClubLogo = async (req, res) => {
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
-        // Check if the user is club president
-        if (req.userId != club.president._id.toString) {
-            return res.status(403).send({ message: "You are not the president of this club, cant update" })
+        return res.status(200).send()
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+}
+
+// Update club background image, require president account
+exports.updateClubBackgroundImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(401).send({ message: "Please choose 1 image to upload (jpeg, png, jpg)" })
         }
+        const club = await Club.findById(req.params.clubId)
+        if (!club) {
+            return res.status(404).send({ message: "Error! Cant upload background. Club not found" })
+        }
+
+        club.backgroundUrl = req.file.location
+        await club.save()
+        return res.status(200).send({ message: `Upload success, img link: ${req.file.location}` })
     } catch (error) {
         return res.status(500).send(error)
     }
@@ -105,7 +121,7 @@ exports.updateClubLogo = async (req, res) => {
 // Update club data, require president account
 exports.updateClub = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.id)
+        const club = await Club.findById(req.params.clubId)
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
