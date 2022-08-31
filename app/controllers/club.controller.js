@@ -23,7 +23,7 @@ exports.getAllClub = async (req, res) => {
 // Get a club data
 exports.getClub = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.id).populate("president", "username avatarUrl")
+        const club = await Club.findById(req.params.id).populate("president members", "username avatarUrl")
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }

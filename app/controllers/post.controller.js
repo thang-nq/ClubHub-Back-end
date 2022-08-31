@@ -36,6 +36,8 @@ exports.getPost = async (req, res) => {
 // Get all post
 exports.getPostList = async (req, res) => {
     try {
+        const clubpostQuery = req.query.club
+
         const postList = await Post.find().populate("author", "username avatarUrl").populate({
             path: "comments",
             select: "author content createAt",
