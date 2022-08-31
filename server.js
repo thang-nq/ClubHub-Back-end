@@ -9,17 +9,20 @@ const authRoute = require('./app/routes/auth.routes')
 const userRoute = require('./app/routes/user.routes')
 const commentRoute = require('./app/routes/comment.routes')
 const clubRoute = require('./app/routes/club.routes')
+const presidentRoute = require('./app/routes/president.routes')
+
 const morgan = require('morgan');
-const multer = require('multer');
+
 
 //env
 env.config()
 
-
 //PORT
 const PORT = process.env.PORT || 8080
 
+// Request log
 app.use(morgan('short'))
+
 //Allow CORS
 app.use(cors());
 
@@ -41,9 +44,8 @@ app.use("/api/user", userRoute)
 app.use("/api/posts", postRoute)
 app.use("/api/auth", authRoute)
 app.use("/api/clubs", clubRoute)
-
-// Comment 
 app.use("/api/comment", commentRoute);
+app.use("/api/president", presidentRoute)
 
 
 app.listen(PORT, () => {

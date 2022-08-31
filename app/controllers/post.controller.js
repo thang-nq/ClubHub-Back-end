@@ -36,8 +36,24 @@ exports.getPost = async (req, res) => {
 // Get all post
 exports.getPostList = async (req, res) => {
     try {
+        // Get club posts
         const clubpostQuery = req.query.club
+        if (clubpostQuery) {
+            const postList = await Post.find({ club: clubpostQuery }).populate("author", "username avatarUrl").populate({
+                path: "comments",
+                select: "author content createAt",
+                populate: {
+                    path: "author",
+                    model: "User",
+                    select: "username avatarUrl"
+                }
 
+            })
+
+            return res.status(200).send(postList)
+        }
+
+        // Get current post
         const postList = await Post.find().populate("author", "username avatarUrl").populate({
             path: "comments",
             select: "author content createAt",
@@ -208,10 +224,12 @@ exports.updatePost = async (req, res) => {
         if (req.userId != postToUpdate.author._id.toString()) {
             return res.status(403).send({ message: "Error! You are not the post author" })
         }
+        // Update fields and change update time
         postToUpdate.content = req.body.content
         postToUpdate.location = req.body.location
         postToUpdate.updateAt = handler.getCurrentTime()
-        // Delete old images on the s3 server if user update the images
+
+        // Delete old post images on the s3 server if user update new images
         if (imageURLs.length > 0) {
             postToUpdate.images.forEach(image => {
                 const result = deleteImage(image.key)
@@ -224,7 +242,7 @@ exports.updatePost = async (req, res) => {
         const post = await postToUpdate.save()
         return res.status(200).send({
             message: "Update sucessfully",
-            content: post
+            updated: post
         })
 
     } catch (error) {
@@ -242,20 +260,28 @@ exports.deletePost = async (req, res) => {
         }
         // Convert mongodb objectid to string before compare
         if (req.userId !== postToDelete.author.toString()) {
-            //Delete the images from s3
-
-
-
-
-            return res.status(402).send({ message: `Delete post ${req.params.postId} unsuccessful` })
+            return res.status(402).send({ message: `Delete post ${req.params.postId} unsuccessful, you are not the author` })
         }
 
+
+        // Delete images in amazon s3
         postToDelete.images.forEach(image => {
             deleteImage(image.key)
         })
-        postToDelete.comments.forEach(comment => Comment.findByIdAndDelete())
+
+        // Delete comment in comment collection
+        const deletedComments = []
+        for (const comment of postToDelete.comments) {
+
+            const data = await Comment.findByIdAndDelete(comment)
+            console.log(`Deleting comment ${data._id}`)
+            deletedComments.push(data.content)
+        }
+
+
+        // Delete post in collection and return data
         const data = await postToDelete.delete()
-        return res.status(200).send({ message: "Delete post successful", deleted: data })
+        return res.status(200).send({ message: "Delete post successful", deleted: data, deletedComment: deletedComments })
 
 
     } catch (err) {

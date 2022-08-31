@@ -54,34 +54,41 @@ const commentController = {
       }
 
       // check if the user is the author of comment
-
       if (req.userId != comment.author.toString()) {
         return res.status(404).json("Error, you can't update other person comment");
       }
-      await comment.updateOne({ $set: { "content": req.body.content } });
-      return res.status(200).send({ message: "Update comment successfully" });
+      if (!req.body.content) {
+        return res.status(401).send({ message: "Error, comment content is empty" })
+      }
+      comment.content = req.body.content
+      comment.updateAt = handler.getCurrentTime()
+      await comment.save()
+      return res.status(200).send({ message: "Update comment successfully", updatedContent: comment.content });
     } catch (error) {
       return res.status(500).send(error);
     }
   },
 
 
+  // Delete a comment
   deleteComment: async (req, res) => {
     try {
       const comment = await Comment.findById(req.params.id);
       if (!comment) {
-        return res.status(404).json("comment not found");
+        return res.status(404).send({ message: "Error! Comment not found!" });
       }
       // check user role and user id for edit
       const ownerID = comment.author.toString();
 
       if (req.userId != ownerID) {
-        return res.status(404).send({ message: "You dont have the permission to delete" });
+        return res.status(404).send({ message: "You dont have the permission to delete this comment (not the author)" });
       }
 
       await Comment.findByIdAndDelete(req.params.id);
+      // Delete comment from post
+      await Post.findByIdAndUpdate(comment.post, { $pull: { comments: comment.id } })
 
-      return res.status(200).send({ message: "Delete success!" })
+      return res.status(200).send({ message: "Delete success!", deleteContent: comment.content })
     } catch (error) {
       return res.status(500).send(error);
     }

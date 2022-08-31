@@ -1,7 +1,9 @@
 const db = require('./../models')
 const { DeleteObjectCommand } = require('@aws-sdk/client-s3')
+const { handler } = require('../handler/handler')
 const Club = db.club
 const User = db.user
+const JoinClubRQ = db.joinrequest
 
 // Get all clubs data
 exports.getAllClub = async (req, res) => {
@@ -112,7 +114,7 @@ exports.updateClubBackgroundImage = async (req, res) => {
 
         club.backgroundUrl = req.file.location
         await club.save()
-        return res.status(200).send({ message: `Upload success, img link: ${req.file.location}` })
+        return res.status(200).send({ message: "Upload success", backgroundUrl: req.file.location })
     } catch (error) {
         return res.status(500).send(error)
     }
@@ -141,5 +143,22 @@ exports.updateClub = async (req, res) => {
 
 // Send request to a join a club
 exports.requestToJoinClub = async (req, res) => {
+    try {
+        const joinRequest = await JoinClubRQ.findOne({ user: req.userId }, { club: req.params.clubId })
+        if (joinRequest) {
+            return res.status(402).send({ message: "Error! Already sent request to this club" })
+        }
+        const currentTime = handler.getCurrentTime()
+        const newRequest = new JoinClubRQ({
+            user: req.userId,
+            club: req.params.clubId,
+            message: req.body.message,
+            createAt: currentTime
+        })
+        await newRequest.save()
 
+        return res.status(200).send({ message: "Request send successfully, please wait for president approval!" })
+    } catch (error) {
+        return res.status(500).send({ error: error })
+    }
 }

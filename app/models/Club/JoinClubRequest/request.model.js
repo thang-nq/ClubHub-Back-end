@@ -9,10 +9,9 @@ const JoinRequest = mongoose.model(
         },
 
         club: {
-            type: {
-                type: mongoose.Schema.Types.ObjectId,
-
-            }
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Club",
+            required: true
         },
 
         status: {
@@ -20,6 +19,10 @@ const JoinRequest = mongoose.model(
             enum: ["pending", "accept", "reject"],
             default: "pending"
         },
+
+        message: String,
+
+        createAt: String
 
 
     })

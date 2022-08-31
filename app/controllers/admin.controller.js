@@ -42,9 +42,11 @@ exports.approveClubCreateRequests = async (req, res) => {
         await club.save()
         return res.status(200).send({ message: `Approve club successfully, this club ${club.name} is now active!` })
     } catch (error) {
-        return res.status(500).send({ message: error })
+        return res.status(500).send({ Error: error })
     }
 }
+
+
 
 
 // 

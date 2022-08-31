@@ -87,12 +87,32 @@ const isClubMember = async (req, res, next) => {
     }
 }
 
+const isNotClubMember = async (req, res, next) => {
+    try {
+        console.log(req.params.clubId)
+        const club = await Club.findById(req.params.clubId)
+        if (!club) {
+            return res.status(200).send({ message: "Club not found" })
+        }
+
+        const userId = club.members.find(member => member.toString() === req.userId)
+        if (!userId) {
+
+            return next()
+        }
+        return res.status(404).send({ message: `Error, user ${req.userId} already a member of ${club.name}` })
+    } catch (error) {
+        return res.status(500).send(error)
+    }
+}
+
 const authJwt = {
     verifyToken,
     isAdmin,
     isClubPrez,
     isClubCW,
-    isClubMember
+    isClubMember,
+    isNotClubMember
 }
 
 module.exports = authJwt
