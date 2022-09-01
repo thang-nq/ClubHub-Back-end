@@ -46,6 +46,7 @@ exports.createClub = async (req, res) => {
             description: req.body.description,
             logoUrl: logo,
             president: req.userId,
+            clubCategory: req.body.category,
             email: req.body.email.toLowerCase().trim(),
         })
         // Club president also count as member

@@ -59,6 +59,12 @@ const Club = mongoose.model(
             required: true
         },
 
+        clubCategory: {
+            type: String,
+            enum: ["Sport", "Tech", "Art", "Games", "Hobbies", "Academic"],
+            required: true
+        },
+
         events: [
             {
                 type: mongoose.Schema.Types.ObjectId,
