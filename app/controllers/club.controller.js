@@ -10,7 +10,7 @@ exports.getAllClub = async (req, res) => {
     try {
         const recruit_query = req.query.recruit
         if (recruit_query == 'true') {
-            const clubs = await Club.find({ status: "Active", acceptingMember: "yes" }).populate("president", "username avatarUrl")
+            const clubs = await Club.find({ status: "Active", acceptingMember: "yes" }).populate("president members", "username avatarUrl")
             return res.status(200).send(clubs)
         }
         const clubs = await Club.find({ status: "Active" }).populate("president", "username avatarUrl")
@@ -29,7 +29,7 @@ exports.getClub = async (req, res) => {
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
-        return res.status(200).send(club)
+        return res.status(200).send({ clubData: club, memberCount: club.members.length })
     } catch (error) {
         return res.status(500).send({ message: "Internal error!" })
     }
@@ -106,11 +106,16 @@ exports.deleteClub = async (req, res) => {
 // Update club logo, require president account
 exports.updateClubLogo = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.id)
+        if (!req.file) {
+            return res.status(400).send({ Error: "Upload 1 img type PNG, JPG, JPEG" })
+        }
+        const club = await Club.findById(req.params.clubId)
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
-        return res.status(200).send()
+        club.logoUrl = req.file.location
+        await club.save()
+        return res.status(200).send({ message: "Upload logo success", logoUrl: club.logoUrl })
     } catch (error) {
         return res.status(500).send(error)
     }

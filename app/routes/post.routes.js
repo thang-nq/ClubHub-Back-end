@@ -7,10 +7,10 @@ const { uploadImages } = require('./../handler/handleImagesUpload')
 // CRUD
 
 // Get all post
-Router.get("/", controller.getPostList)
+Router.get("/", [authJwt.verifyToken], controller.getPostList)
 
 // Search post
-Router.get("/search", controller.getUserPosts)
+Router.get("/search", [authJwt.verifyToken], controller.getUserPosts)
 
 // Create a club post 
 Router.post("/clubs/:clubId", [authJwt.verifyToken, authJwt.isClubCW, authJwt.isClubMember, uploadImages], controller.createNewClubPost)

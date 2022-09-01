@@ -38,24 +38,24 @@ exports.getPost = async (req, res) => {
 exports.getPostList = async (req, res) => {
     try {
         // Get club posts
-        const clubpostQuery = req.query.club
-        if (clubpostQuery) {
-            const postList = await Post.find({ club: clubpostQuery }).populate("author", "username avatarUrl").populate({
-                path: "comments",
-                select: "author content createAt",
-                populate: {
-                    path: "author",
-                    model: "User",
-                    select: "username avatarUrl"
-                }
+        // const clubpostQuery = req.query.club
+        // if (clubpostQuery) {
+        //     const postList = await Post.find({ club: clubpostQuery }).populate("author", "username avatarUrl").populate({
+        //         path: "comments",
+        //         select: "author content createAt",
+        //         populate: {
+        //             path: "author",
+        //             model: "User",
+        //             select: "username avatarUrl"
+        //         }
 
-            })
+        //     })
 
-            return res.status(200).send(postList)
-        }
+        //     return res.status(200).send(postList)
+        // }
 
         // Get current post
-        const postList = await Post.find().populate("author", "username avatarUrl").populate({
+        const postList = await Post.find({ author: req.userId }).populate("author", "username avatarUrl").populate({
             path: "comments",
             select: "author content createAt",
             populate: {
@@ -82,7 +82,11 @@ exports.getUserPosts = async (req, res) => {
         if (!username_query) {
             return res.status(401).send({ message: "Missing query params" })
         }
-        const postList = await Post.find({ authorUsername: username_query }).populate("likes", "username")
+        const user = await User.findOne({ username: username_query })
+        if (!user) {
+            return res.status(404).send({ Error: `Username ${username_query} not found on the database!` })
+        }
+        const postList = await Post.find({ author: user._id }).populate("author comments", "username avatarUrl")
         return res.status(200).send(postList)
     } catch (err) {
         return res.status(500).send({ message: `Error! ${err.message}` })
@@ -97,7 +101,7 @@ exports.getClubPosts = async (req, res) => {
             return res.status(404).send({ Error: "Club not found!" })
         }
 
-        const posts = await Post.find({ club: req.params.clubId })
+        const posts = await Post.find({ club: req.params.clubId }).populate("author comments", "username avatarUrl")
 
         return res.status(200).send(posts)
 
