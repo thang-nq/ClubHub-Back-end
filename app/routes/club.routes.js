@@ -15,10 +15,10 @@ router.post("/", [authJwt.verifyToken, authJwt.isClubPrez], controller.createClu
 router.post("/:clubId/logo", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadLogo], controller.updateClubLogo)
 
 // Update/Upload a club background image
-router.post("/:clubId/bg", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadBackground], controller.updateClubBackgroundImage)
+router.put("/:clubId/bg", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadBackground], controller.updateClubBackgroundImage)
 
 
-// router.put("/:clubId/bg", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadBackground], controller.updateClubBackgroundImage)
+// router.post("/:clubId/bg", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadBackground], controller.updateClubBackgroundImage)
 
 // Update a club (need accessToken)
 router.put("/:clubId", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember], controller.updateClub)
