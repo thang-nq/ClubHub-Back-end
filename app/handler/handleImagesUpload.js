@@ -104,7 +104,7 @@ const uploadBackground = multer({
             cb(null, { fieldName: file.fieldname });
         },
         key: function (req, file, cb) {
-            cb(null, req.params.clubId + "backgroundimg")
+            cb(null, uuidv4() + "backgroundimg")
         },
         acl: "public-read-write",
         contentType: multerS3.AUTO_CONTENT_TYPE

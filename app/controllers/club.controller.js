@@ -135,6 +135,24 @@ exports.updateClubBackgroundImage = async (req, res) => {
     }
 }
 
+// exports.updateClubBg = async (req, res) => {
+//     try {
+//         if (!req.file) {
+//             return res.status(401).send({ message: "Please choose 1 image to upload (jpeg, png, jpg)" })
+//         }
+//         const club = await Club.findById(req.params.clubId)
+//         if (!club) {
+//             return res.status(404).send({ message: "Error! Cant upload background. Club not found" })
+//         }
+
+//         club.backgroundUrl = req.file.location
+//         await club.save()
+//         return res.status(200).send({ message: "Upload success", backgroundUrl: req.file.location })
+//     } catch (error) {
+//         return res.status(500).send(error)
+//     }
+// }
+
 // Update club data, require president account
 exports.updateClub = async (req, res) => {
     try {
