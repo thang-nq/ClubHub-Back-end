@@ -64,3 +64,38 @@ exports.approveOrRecjectMember = async (req, res) => {
         return res.status(500).send({ message: error })
     }
 }
+
+// Get all members of the club
+exports.getAllClubMembers = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.clubId).populate("president members", "username avatarUrl roles")
+        return res.status(200).send({ message: "Success", members: club.members, memberCount: club.members.length })
+    } catch (error) {
+        return res.status(500).send({ Error: error })
+    }
+}
+
+// Set a member role to club content writer
+exports.clubMemberSetRole = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.clubId)
+        const member = club.members.find(member => member.toString() === req.body.userId)
+        if (!member) {
+            return res.status(403).send({ Error: "This user is not in this club" })
+        }
+        const memberData = await User.findById(req.body.userId)
+        if (!memberData) {
+            return res.status(404).send({ Error: "Member data not found on the server!" })
+        }
+
+        console.log()
+        if (req.body.roles === "user" || req.body.roles === "clubcw") {
+            memberData.roles = req.body.roles
+            await memberData.save()
+            return res.status(200).send({ message: `Set user ${memberData.username} to ${memberData.roles} successfully!` })
+        }
+        return res.status(403).send({ Error: "Can only set member to Content writer or normal user!" })
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}

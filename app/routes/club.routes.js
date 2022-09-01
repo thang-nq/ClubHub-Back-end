@@ -9,7 +9,7 @@ const { isClubPrez, isAdmin } = require('../middleware/authJwt')
 router.get("/", controller.getAllClub)
 
 // Create a club president account required
-router.post("/", [authJwt.verifyToken, authJwt.isClubPrez, sanitize.sanitizeClubRequest], controller.createClub)
+router.post("/", [authJwt.verifyToken, authJwt.isClubPrez], controller.createClub)
 
 //Update a club logo, president account required
 router.post("/:clubId/logo", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadLogo], controller.updateClubLogo)

@@ -9,7 +9,7 @@ const Comment = db.comment
 // Get all clubs
 exports.getAllClub = async (req, res) => {
     try {
-        const clubs = await Club.find()
+        const clubs = await Club.find().populate("president members", "username avatarUrl")
         return res.status(200).send(clubs)
     } catch (error) {
         return res.status(500).send({ message: error })
@@ -23,7 +23,7 @@ exports.getAllClub = async (req, res) => {
 // Get all pending clubs
 exports.getClubCreateRequests = async (req, res) => {
     try {
-        const clubs = await Club.find({ status: "Pending" })
+        const clubs = await Club.find({ status: "Pending" }).populate("president members", "username avatarUrl")
         return res.status(200).send(clubs)
     } catch (error) {
         return res.status(500).send({ message: error })
@@ -45,6 +45,8 @@ exports.approveClubCreateRequests = async (req, res) => {
         return res.status(500).send({ Error: error })
     }
 }
+
+// Get all users
 
 
 

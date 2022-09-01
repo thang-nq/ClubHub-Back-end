@@ -38,6 +38,10 @@ exports.getClub = async (req, res) => {
 // Create a new club after verify the user is club president
 exports.createClub = async (req, res) => {
     try {
+        const existedClub = Club.find({ president: req.userId })
+        if (existedClub) {
+            return res.status(403).send({ Error: "You already create a club, each president is limit to 1 club" })
+        }
         const processedName = req.body.name.replaceAll(" ", "")
         const logo = `https://source.boringavatars.com/bauhaus/120/${processedName}`
         const club = new Club({
@@ -51,8 +55,18 @@ exports.createClub = async (req, res) => {
         })
         // Club president also count as member
         club.members.push(req.userId)
-        const savedClub = await club.save()
-        return res.status(200).send(savedClub)
+        const savedClub = club.save((err, result) => {
+            if (err) {
+                let customErrMessage = err.message
+                if (err.code === 11000) {
+                    customErrMessage = "Club name already taken"
+                }
+
+                return res.status(500).send({ error: customErrMessage })
+            }
+
+            return res.status(200).send(result)
+        })
     } catch (error) {
         return res.status(500).send({ message: error })
     }

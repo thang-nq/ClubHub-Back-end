@@ -10,6 +10,7 @@ const userRoute = require('./app/routes/user.routes')
 const commentRoute = require('./app/routes/comment.routes')
 const clubRoute = require('./app/routes/club.routes')
 const presidentRoute = require('./app/routes/president.routes')
+const adminRoute = require('./app/routes/admin.routes')
 
 const morgan = require('morgan');
 
@@ -46,7 +47,7 @@ app.use("/api/auth", authRoute)
 app.use("/api/clubs", clubRoute)
 app.use("/api/comment", commentRoute);
 app.use("/api/president", presidentRoute)
-
+app.use("/api/admin", adminRoute)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`)

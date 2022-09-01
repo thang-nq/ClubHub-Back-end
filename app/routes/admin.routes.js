@@ -9,4 +9,7 @@ Router.get("/clubrequests", [authJwt.verifyToken, authJwt.isAdmin], controller.g
 // Approve club create requests
 Router.post("/clubrequests/approve", [authJwt.verifyToken, authJwt.isAdmin], controller.approveClubCreateRequests)
 
-// 
+// Get all clubs
+Router.get("/allclubs", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllClub)
+
+module.exports = Router

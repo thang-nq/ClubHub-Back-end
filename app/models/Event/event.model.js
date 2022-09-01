@@ -6,6 +6,7 @@ const Event = mongoose.model(
 
         name: {
             type: String,
+            unique: true,
             required: true
         },
 
@@ -17,7 +18,7 @@ const Event = mongoose.model(
         startDate: String,
         endDate: String,
 
-        status: {
+        eventStatus: {
             type: String,
             enum: ["Ongoing", "Pending", "End"],
             default: "Pending"

@@ -4,7 +4,8 @@ const Club = mongoose.model(
     new mongoose.Schema({
         name: {
             type: String,
-            required: true
+            unique: [true, "Club name is already taken!"],
+            required: true,
         },
 
         status: {
@@ -56,13 +57,13 @@ const Club = mongoose.model(
 
         email: {
             type: String,
-            required: true
+            required: [true, "must have an contact email"]
         },
 
         clubCategory: {
             type: String,
             enum: ["Sport", "Tech", "Art", "Games", "Hobbies", "Academic"],
-            required: true
+            required: [true, "Must choose one of the provided category"]
         },
 
         events: [
