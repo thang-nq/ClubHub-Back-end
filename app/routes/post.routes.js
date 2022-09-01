@@ -15,6 +15,9 @@ Router.get("/search", controller.getUserPosts)
 // Create a club post 
 Router.post("/clubs/:clubId", [authJwt.verifyToken, authJwt.isClubCW, authJwt.isClubMember, uploadImages], controller.createNewClubPost)
 
+// Get all post of a club
+Router.get("/clubs/:clubId", [authJwt.verifyToken], controller.getClubPosts)
+
 // Create a normal post 
 Router.post("/", [authJwt.verifyToken, uploadImages], controller.createNewPost)
 // View a post

@@ -6,7 +6,7 @@ const Router = require('express').Router()
 Router.get('/myclub/:clubId/request', [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember], controller.getClubJoinRequest)
 
 //Accept a member to the club
-Router.post("/myclub/:clubId/request/:requestId/accept", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember], controller.approveMember)
+Router.post("/myclub/:clubId/request/", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember], controller.approveOrRecjectMember)
 
 // Club president change member role
 

@@ -3,6 +3,7 @@ const { handler } = require('./../handler/handler')
 const { deleteImage } = require('./../handler/handleImagesUpload')
 
 const multer = require('multer')
+const Club = require('../models/Club/club.model')
 const Post = db.post
 const User = db.user
 const Comment = db.comment
@@ -88,6 +89,23 @@ exports.getUserPosts = async (req, res) => {
     }
 }
 
+// Get all post from a club
+exports.getClubPosts = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.clubId)
+        if (!club) {
+            return res.status(404).send({ Error: "Club not found!" })
+        }
+
+        const posts = await Post.find({ club: req.params.clubId })
+
+        return res.status(200).send(posts)
+
+
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
 
 
 
@@ -166,10 +184,20 @@ exports.createNewPost = async (req, res) => {
             return res.status(404).send({ message: "Couldn't create post, user does not exist" })
         }
 
+        newPost.save((err, result) => {
+            if (err) {
+                if (imageURLs.length > 0) {
+                    imageURLs.forEach(imgData => {
+                        deleteImage(imgData.key)
+                    })
+                }
+                return res.status(500).send({ message: err })
+            }
 
-        const savedPost = await newPost.save()
-        console.log(`A new post has been created by ${user.username}`)
-        return res.status(200).send(savedPost)
+            console.log(`A new post has been created by ${user.username}`)
+            return res.status(200).send(result)
+        })
+
     } catch (err) {
         return res.status(500).send({ message: err })
     }

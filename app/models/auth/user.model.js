@@ -12,6 +12,13 @@ const User = mongoose.model(
         },
 
         snumber: String,
+        clubs: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Club"
+            }
+        ],
+
 
         username: {
             type: String,

@@ -16,36 +16,48 @@ exports.getClubJoinRequest = async (req, res) => {
 }
 
 // Approve a pending request and add the user to the club
-exports.approveMember = async (req, res) => {
+exports.approveOrRecjectMember = async (req, res) => {
     try {
+
         // Check if request, club, user are all existed in the database
-        const request = await JoinClubRQ.findById(req.params.requestId)
+        const request = await JoinClubRQ.findById(req.body.requestId)
         if (!request) {
             return res.status(404).send({ message: "Error! Request not found!" })
         }
-        console.log(request.club)
+
         const club = await Club.findById(request.club)
         if (!club) {
-            return res.status(404).send({ message: "Error! Club not found" })
-        }
-        const user = await User.findById(request.user)
-        if (!user) {
-            return res.status(404).send({ message: "Error! User not found" })
+            await request.delete()
+            return res.status(404).send({ message: "Error! Club not found, this request will be deleted" })
         }
 
+        const user = await User.findById(request.user)
+        if (!user) {
+            await request.delete()
+            return res.status(404).send({ message: "Error! User not found, this request will be deleted" })
+        }
+
+        if (req.body.action !== 'approve' || req.body.action !== 'reject') {
+            return res.status(402).send({ Error: "Please choose one action 'approve' or 'reject' in the 'action' request body" })
+        }
         // If the member has been added to the club by admin
         for (const member of club.members) {
             if (member.toString() === user.id) {
                 await request.delete()
-                return res.status(402).send({ message: "Error! Cant approve, user already in this club, this request will be automatically deleted!" })
+                return res.status(402).send({ message: "Error! This user already in this club, this request will be automatically deleted!" })
             }
         }
 
-        // Add member to the club
-        club.members.push(user._id)
-        await club.save()
+        if (req.body.action === 'approve') {
+            await club.update({ $push: { members: request.user } })
+        } else if (req.body.action === 'reject') {
+            await club.update({ $pull: { members: request.user } })
+        }
 
-        return res.status(200).send({ message: "Success!", action: `User ${user.username} has been added to the club ${club.name}` })
+        // Add member to the club, delete the request
+        await request.delete()
+
+        return res.status(200).send({ message: "Success!", action: `User ${user.username} has been ${req.body.action} - club ${club.name}` })
 
 
     } catch (error) {
