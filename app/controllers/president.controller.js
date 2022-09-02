@@ -68,7 +68,7 @@ exports.approveOrRecjectMember = async (req, res) => {
 // Get all members of the club
 exports.getAllClubMembers = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId).populate("president members", "username avatarUrl roles")
+        const club = await Club.findById(req.params.clubId).populate("president members", "name username avatarUrl roles dob phone snumber gender")
         return res.status(200).send({ message: "Success", members: club.members, memberCount: club.members.length })
     } catch (error) {
         return res.status(500).send({ Error: error })

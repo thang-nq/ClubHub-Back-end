@@ -34,7 +34,7 @@ exports.getClubCreateRequests = async (req, res) => {
 // Set club status to active 
 exports.approveClubCreateRequests = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId)
+        const club = await Club.findById(req.body.clubId)
         if (!club) {
             return res.status(404).send({ message: "Failed to approve, club not found!" })
         }
