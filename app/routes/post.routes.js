@@ -26,11 +26,14 @@ Router.get("/:postId", controller.getPost)
 // Update a post
 Router.put("/:postId", [authJwt.verifyToken, uploadImages], controller.updatePost)
 
-// Update club post
+// Update club post (club president or content writer, can only update post from the club)
 Router.put("/clubs/:postId", [authJwt.verifyToken, authJwt.isClubCW, uploadImages], controller.updateClubPost)
 
-// Delete a post 
+// Delete a post
 Router.delete("/:postId", authJwt.verifyToken, controller.deletePost)
+
+// delete a club post
+Router.delete("/clubs/:postId", authJwt.verifyToken, authJwt.isClubCW, controller.deleteClubPost)
 
 
 

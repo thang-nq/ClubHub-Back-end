@@ -410,5 +410,38 @@ exports.deletePost = async (req, res) => {
 
 }
 
+exports.deleteClubPost = async (req, res) => {
+    try {
+        const postToDelete = await Post.findById(req.params.postId)
+        if (!postToDelete) {
+            return res.status(404).send({ message: "Error! Post not found" })
+        }
+        const user = await User.findById(req.userId)
+        if (!user.clubs.includes(postToDelete.club)) {
+            return res.status(403).send({ message: "Error! Cant delete post not from your club" })
+        }
+
+        if (postToDelete.images.length > 0) {
+            postToDelete.images.forEach(image => {
+                deleteImage(image.key)
+            })
+        }
+
+        const deletedComments = []
+        // Also remember to delete comments
+        for (const comment of postToDelete.comments) {
+            const data = await Comment.findByIdAndDelete(comment)
+            console.log(`Deleting comment ${data._id}`)
+            deletedComments.push(data.content)
+        }
+
+        await postToDelete.delete()
+        return res.status(200).send({ message: "Delete post successful", deletedComment: deletedComments })
+
+    } catch (error) {
+
+    }
+}
+
 
 

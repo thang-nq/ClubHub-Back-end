@@ -4,10 +4,26 @@ const JoinClubRQ = db.joinrequest
 const Club = db.club
 
 
+
+// Get club info
+exports.getClubInfo = async (req, res) => {
+    try {
+        const president = await User.findById(req.userId)
+        if (!president.createdClub) {
+            return res.status(404).send({ message: "You havent created a club!" })
+        }
+        const club = await Club.findById(president.createdClub).populate("president", "username name avatarUrl")
+        return res.status(200).send({ clubData: club, memberCount: club.members.length })
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
 // Get all pending request of a club
 exports.getClubJoinRequest = async (req, res) => {
     try {
-        const requests = await JoinClubRQ.find({ club: req.params.clubId, status: "pending" })
+        const user = await User.findById(req.userId)
+        const requests = await JoinClubRQ.find({ club: user.createdClub, status: "pending" }).populate("user", "username name gender avatarUrl")
         return res.status(200).send(requests)
 
     } catch (error) {
@@ -15,14 +31,22 @@ exports.getClubJoinRequest = async (req, res) => {
     }
 }
 
+
+
 // Approve a pending request and add the user to the club
 exports.approveOrRecjectMember = async (req, res) => {
     try {
+
+        const president = await User.findById(req.userId)
 
         // Check if request, club, user are all existed in the database
         const request = await JoinClubRQ.findById(req.body.requestId)
         if (!request) {
             return res.status(404).send({ message: "Error! Request not found!" })
+        }
+
+        if (president.createdClub.toString() !== request.club.toString()) {
+            return res.status(403).send({ message: "Error! You dont have permission to process this request" })
         }
 
         const club = await Club.findById(request.club)
@@ -37,7 +61,7 @@ exports.approveOrRecjectMember = async (req, res) => {
             return res.status(404).send({ message: "Error! User not found, this request will be deleted" })
         }
 
-        if (req.body.action !== 'approve' || req.body.action !== 'reject') {
+        if (req.body.action !== 'approve' && req.body.action !== 'reject') {
             return res.status(402).send({ Error: "Please choose one action 'approve' or 'reject' in the 'action' request body" })
         }
         // If the member has been added to the club by admin
@@ -49,10 +73,10 @@ exports.approveOrRecjectMember = async (req, res) => {
         }
 
         if (req.body.action === 'approve') {
-            await club.update({ $push: { members: request.user } })
-        } else if (req.body.action === 'reject') {
-            await club.update({ $pull: { members: request.user } })
+            await club.updateOne({ $push: { members: request.user } })
         }
+        await user.updateOne({ $push: { clubs: club._id } })
+
 
         // Add member to the club, delete the request
         await request.delete()
@@ -68,7 +92,11 @@ exports.approveOrRecjectMember = async (req, res) => {
 // Get all members of the club
 exports.getAllClubMembers = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId).populate("president members", "name username avatarUrl roles dob phone snumber gender")
+        const user = await User.findById(req.userId)
+        if (!user.createdClub) {
+            return res.status(404).send({ message: "You haven't created a club yet!" })
+        }
+        const club = await Club.findById(user.createdClub).populate("president members", "name username avatarUrl roles dob phone snumber gender")
         return res.status(200).send({ message: "Success", members: club.members, memberCount: club.members.length })
     } catch (error) {
         return res.status(500).send({ Error: error })
@@ -78,7 +106,11 @@ exports.getAllClubMembers = async (req, res) => {
 // Set a member role to club content writer
 exports.clubMemberSetRole = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId)
+        const user = await User.findById(req.userId)
+        if (!user.createdClub) {
+            return res.status(404).send({ message: "You haven't created a club yet!" })
+        }
+        const club = await Club.findById(user.createdClub)
         const member = club.members.find(member => member.toString() === req.body.userId)
         if (!member) {
             return res.status(403).send({ Error: "This user is not in this club" })
@@ -88,7 +120,6 @@ exports.clubMemberSetRole = async (req, res) => {
             return res.status(404).send({ Error: "Member data not found on the server!" })
         }
 
-        console.log()
         if (req.body.roles === "user" || req.body.roles === "clubcw") {
             memberData.roles = req.body.roles
             await memberData.save()
@@ -101,3 +132,31 @@ exports.clubMemberSetRole = async (req, res) => {
 }
 
 // Kick member from club
+exports.kickMember = async (req, res) => {
+    try {
+        // Check if user is a president of a club
+        const president = await User.findById(req.userId)
+        const club = await Club.findById(president.createdClub)
+        if (!club) {
+            return res.status(404).send({ message: "You havent created a club yet" })
+        }
+
+        if (req.params.userId === president.id) {
+            return res.status(400).send({ message: "Error, you cant kick yourself" })
+        }
+        const member = await User.findById(req.params.userId)
+        if (!member) {
+            return res.status(404).send({ message: "Error! Member not found!" })
+        }
+        if (!club.members.includes(member.id)) {
+            return res.status(404).send({ message: "Error! This user is not in your club!" })
+        }
+
+        await club.updateOne({ $pull: { members: member._id } })
+        await member.updateOne({ $pull: { clubs: club._id } })
+        return res.status(200).send({ message: "Kick member success" })
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
