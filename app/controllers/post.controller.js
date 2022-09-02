@@ -55,7 +55,9 @@ exports.getPostList = async (req, res) => {
         // }
 
         // Get current post
-        const postList = await Post.find({ author: req.userId }).populate("author", "username avatarUrl").populate({
+        const user = await User.findById(req.userId)
+
+        const postList = await Post.find({ author: req.userId }, {}).populate("author", "username avatarUrl").populate({
             path: "comments",
             select: "author content createAt",
             populate: {
@@ -86,7 +88,16 @@ exports.getUserPosts = async (req, res) => {
         if (!user) {
             return res.status(404).send({ Error: `Username ${username_query} not found on the database!` })
         }
-        const postList = await Post.find({ author: user._id }).populate("author comments", "username avatarUrl")
+        const postList = await Post.find({ author: user._id }).populate("author", "username avatarUrl").
+            populate({
+                path: "comments",
+                select: "author content createAt",
+                populate: {
+                    path: "author",
+                    model: "User",
+                    select: "username avatarUrl"
+                }
+            })
         return res.status(200).send(postList)
     } catch (err) {
         return res.status(500).send({ message: `Error! ${err.message}` })
@@ -117,7 +128,6 @@ exports.getClubPosts = async (req, res) => {
 // Content writer, admin add new post for a club
 exports.createNewClubPost = async (req, res) => {
     try {
-        console.log(req.files)
         const uploadData = req.files
         const imageURLs = []
         // Check If the user upload images
@@ -249,11 +259,21 @@ exports.updatePost = async (req, res) => {
         const postToUpdate = await Post.findById(req.params.postId)
         // Check if post exist
         if (!postToUpdate) {
+            if (imageURLs.length > 0) {
+                imageURLs.forEach(image => {
+                    deleteImage(image.key)
+                })
+            }
             return res.status(404).send({ message: "Error! Post not found" })
         }
 
         // Check if the user is the author
         if (req.userId != postToUpdate.author._id.toString()) {
+            if (imageURLs.length > 0) {
+                imageURLs.forEach(image => {
+                    deleteImage(image.key)
+                })
+            }
             return res.status(403).send({ message: "Error! You are not the post author" })
         }
         // Update fields and change update time
@@ -278,6 +298,74 @@ exports.updatePost = async (req, res) => {
         })
 
     } catch (error) {
+
+        // Delete images if the request failed by server error
+        const uploadData = req.files
+        if (uploadData) {
+            uploadData.forEach(file => {
+                deleteImage(file.key)
+            })
+        }
+        return res.status(500).send({ message: error })
+    }
+}
+
+
+// Update a club post, need at least content writer permission, and belong to the club
+exports.updateClubPost = async (req, res) => {
+    try {
+        const uploadData = req.files
+        const imgUrl = []
+        if (uploadData) {
+            uploadData.forEach(imgData => {
+                imgUrl.push({ url: imgData.location, key: imgData.key })
+            })
+        }
+
+        // Because the img is already upload to s3 before we can validation (due to the unstable order of multipart - form data)
+        // we have to delete the image if validation process failed or any error occur
+        const postToUpdate = await Post.findById(req.params.postId)
+        if (!postToUpdate) {
+            if (imgUrl.length > 0) {
+                imgUrl.forEach(img => {
+                    deleteImage(img.key)
+                })
+            }
+            return res.status(404).send({ message: "Post not found" })
+        }
+
+        const user = await User.findById(req.userId)
+        if (!user.clubs.includes(postToUpdate.club)) {
+            if (imgUrl.length > 0) {
+                imgUrl.forEach(img => {
+                    deleteImage(img.key)
+                })
+            }
+            return res.status(403).send({ Error: "This post is not from your club!" })
+        }
+
+        postToUpdate.content = req.body.content
+        postToUpdate.location = req.body.location
+        postToUpdate.updateAt = handler.getCurrentTime()
+        // If the update contain images, delete old imgs from s3
+        if (imageURLs.length > 0) {
+            postToUpdate.images.forEach(image => {
+                const result = deleteImage(image.key)
+                console.log(result)
+            })
+            postToUpdate.images = imageURLs
+        }
+
+        await postToUpdate.save()
+        return res.status(200).send({ message: "update club post success", updatedContent: postToUpdate })
+
+    } catch (error) {
+        const uploadData = req.files
+        if (uploadData) {
+            uploadData.forEach(file => {
+                deleteImage(file.key)
+            })
+        }
         return res.status(500).send({ message: error })
     }
 }

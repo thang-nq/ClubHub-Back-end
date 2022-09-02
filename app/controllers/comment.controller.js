@@ -5,6 +5,21 @@ const Post = db.post
 const User = db.user
 
 const commentController = {
+  // get a comment
+  getOne: async (req, res) => {
+    try {
+      const comment = await Comment.findById(req.params.id).populate("author", "username avatarUrl")
+      if (!comment) {
+        return res.status(404).send({ message: "Error, comment not found!" })
+      }
+      return res.status(200).send(comment)
+    } catch (error) {
+      return res.status(500).send({ message: error })
+    }
+  },
+
+
+
   // adComments
   addComment: async (req, res) => {
     try {

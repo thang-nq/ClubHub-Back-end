@@ -30,6 +30,9 @@ exports.getClub = async (req, res) => {
             return res.status(404).send({ message: "Club not found!" })
         }
         if (club.status !== 'Active') {
+            if (req.userRole === 'admin') {
+                return res.status(200).send(club)
+            }
             return res.status(403).send({ message: "This club is not active, please come back when approved by admin" })
         }
         return res.status(200).send({ clubData: club, memberCount: club.members.length })

@@ -8,6 +8,9 @@ router.post("/", authJwt.verifyToken, commentController.addComment);
 // Get all comments
 router.get("/", commentController.getAllComments);
 
+// Get a comment
+router.get("/:id", commentController.getOne)
+
 // Delete a comment
 router.delete("/:id", authJwt.verifyToken, commentController.deleteComment);
 
