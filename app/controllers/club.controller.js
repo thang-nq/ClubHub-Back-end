@@ -188,7 +188,7 @@ exports.updateClub = async (req, res) => {
 // Send request to a join a club
 exports.requestToJoinClub = async (req, res) => {
     try {
-        const joinRequest = await JoinClubRQ.findOne({ user: req.userId }, { club: req.params.clubId })
+        const joinRequest = await JoinClubRQ.findOne({ user: req.userId, club: req.params.clubId })
         if (joinRequest) {
             return res.status(402).send({ message: "Error! Already sent request to this club" })
         }
