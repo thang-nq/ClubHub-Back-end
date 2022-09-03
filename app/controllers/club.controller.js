@@ -13,7 +13,7 @@ exports.getAllClub = async (req, res) => {
             const clubs = await Club.find({ status: "Active", acceptingMember: "yes" }).populate("president members", "username avatarUrl")
             return res.status(200).send(clubs)
         }
-        const clubs = await Club.find({ status: "Active" }).populate("president", "username avatarUrl")
+        const clubs = await Club.find({ status: "Active" }).populate("president members", "username dob name gender email avatarUrl")
         return res.status(200).send(clubs)
     } catch (error) {
         return res.status(500).send({ error: error })

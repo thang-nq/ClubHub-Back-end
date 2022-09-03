@@ -19,10 +19,23 @@ const User = mongoose.model(
 
         clubs: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Club"
+                club: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Club"
+                },
+
+                role: {
+                    type: String,
+                    enum: ["user", "content-writer", "president"]
+                }
             }
+
         ],
+
+        isAdmin: {
+            type: mongoose.Schema.Types.Boolean,
+            default: false
+        },
 
 
         username: {
