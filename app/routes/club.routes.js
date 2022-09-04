@@ -8,8 +8,8 @@ const { uploadLogo, uploadBackground } = require('./../handler/handleImagesUploa
 // Get all club
 router.get("/", controller.getAllClub)
 
-// Create a club president account required
-router.post("/", [authJwt.verifyToken, authJwt.isClubPrez], controller.createClub)
+// Create a club 
+router.post("/", [authJwt.verifyToken], controller.createClub)
 
 //Update a club logo, president account required
 router.put("/:clubId/logo", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadLogo], controller.updateClubLogo)
@@ -17,8 +17,7 @@ router.put("/:clubId/logo", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.is
 // Update/Upload a club background image
 router.put("/:clubId/bg", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadBackground], controller.updateClubBackgroundImage)
 
-// Update a club (need accessToken)
-router.put("/:clubId", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember], controller.updateClub)
+
 
 // Delete a club (need accessToken)
 router.delete("/:clubId", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteClub)

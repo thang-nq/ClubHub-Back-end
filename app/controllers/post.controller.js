@@ -112,7 +112,9 @@ exports.getClubPosts = async (req, res) => {
             return res.status(404).send({ Error: "Club not found!" })
         }
 
+
         const posts = await Post.find({ club: req.params.clubId }).populate("author comments", "username avatarUrl")
+
 
         return res.status(200).send(posts)
 
@@ -397,6 +399,7 @@ exports.deletePost = async (req, res) => {
             console.log(`Deleting comment ${data._id}`)
             deletedComments.push(data.content)
         }
+
 
 
         // Delete post in collection and return data

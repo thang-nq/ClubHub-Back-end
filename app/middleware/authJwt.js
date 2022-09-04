@@ -37,7 +37,7 @@ const verifyToken = (req, res, next) => {
 //Find a user by id and check if the role exist
 const isAdmin = async (req, res, next) => {
     const user = await User.findById(req.userId)
-    if (user.roles === "admin") {
+    if (user.isAdmin) {
         return next()
     }
 
@@ -48,29 +48,59 @@ const isAdmin = async (req, res, next) => {
 
 
 const isClubPrez = async (req, res, next) => {
-    const user = await User.findById(req.userId)
-    if (user.roles == "clubprez" || user.roles == "admin") {
+    try {
+        const user = await User.findById(req.userId)
+        console.log(user.clubs)
+        let isAllowed = false
+        if (user.clubs.length > 0) {
+            user.clubs.forEach(club => {
+                if (club.club.toString() === req.params.clubId && club.role === "president") {
+                    isAllowed = true
+                }
+            })
+        }
 
-        return next()
+        if (isAllowed) {
+            return next()
+        }
+
+        return res.status(403).send({ message: "Fail! Club president account required" })
+
+    } catch (error) {
+        return res.status(500).send({ message: error })
     }
 
-    return res.status(403).send({ message: "Fail! Club president account required" })
 }
 
 const isClubCW = async (req, res, next) => {
 
-    const user = await User.findById(req.userId)
-    if (user.roles == "admin" || user.roles == "clubcw" || user.roles == "clubprez") {
+    try {
+        const user = await User.findById(req.userId)
+        let isAllowed = false
+        if (user.clubs.length > 0) {
+            user.clubs.forEach(club => {
+                if (club.club._id.toString() === req.params.clubId
+                    && (club.role === "writer" || club.role === "president")) {
+                    isAllowed = true
+                }
+            })
+        }
 
-        return next()
+        if (isAllowed) {
+            return next()
+        }
+
+        return res.status(403).send({ message: "Fail! Club content writer or president account required!" })
+    } catch (error) {
+        return res.status(500).send({ message: error })
     }
-    return res.status(403).send({ message: "Fail! Club content writer or president account required!" })
+
 
 }
 
 const isClubMember = async (req, res, next) => {
     try {
-        console.log(req.params.clubId)
+        // console.log(req.params.clubId)
         const club = await Club.findById(req.params.clubId)
         if (!club) {
             return res.status(200).send({ message: "Club not found" })
@@ -78,7 +108,6 @@ const isClubMember = async (req, res, next) => {
 
         const userId = club.members.find(member => member.toString() === req.userId)
         if (!userId) {
-
             return res.status(404).send({ message: "Not a member of " + club.name })
         }
         return next()

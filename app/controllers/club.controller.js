@@ -25,29 +25,28 @@ exports.getAllClub = async (req, res) => {
 // Get a club data
 exports.getClub = async (req, res) => {
     try {
-        const club = await Club.findById(req.params.clubId).populate("president members", "name username avatarUrl roles")
+        const club = await Club.findById(req.params.clubId).populate("president members", "name username avatarUrl")
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
         }
         if (club.status !== 'Active') {
-            if (req.userRole === 'admin') {
-                return res.status(200).send(club)
-            }
+
             return res.status(403).send({ message: "This club is not active, please come back when approved by admin" })
         }
         return res.status(200).send({ clubData: club, memberCount: club.members.length })
     } catch (error) {
-        return res.status(500).send({ message: "Internal error!" })
+        return res.status(500).send({ message: error })
     }
 }
 
 // Create a new club after verify the user is club president
 exports.createClub = async (req, res) => {
     try {
-        const existedClub = Club.find({ president: req.userId })
+        const existedClub = await Club.findOne({ president: req.userId })
         if (existedClub) {
             return res.status(403).send({ Error: "You already create a club, each president is limit to 1 club" })
         }
+
         const processedName = req.body.name.replaceAll(" ", "")
         const logo = `https://source.boringavatars.com/bauhaus/120/${processedName}`
         const club = new Club({
@@ -61,6 +60,16 @@ exports.createClub = async (req, res) => {
         })
         // Club president also count as member
         club.members.push(req.userId)
+
+        // Add president role for the club creator
+        const clubObject = {
+            club: club.id,
+            role: "president",
+            joinDate: handler.getCurrentTime()
+        }
+        await User.findByIdAndUpdate(req.userId, { $push: { clubs: clubObject }, $set: { createdClub: club.id } })
+
+        // Save club as pending and wait for admin to approve
         const savedClub = club.save((err, result) => {
             if (err) {
                 let customErrMessage = err.message
@@ -71,7 +80,7 @@ exports.createClub = async (req, res) => {
                 return res.status(500).send({ error: customErrMessage })
             }
 
-            return res.status(200).send(result)
+            return res.status(200).send({ message: "Club creation request send success!", clubInfo: result })
         })
     } catch (error) {
         return res.status(500).send({ message: error })
@@ -146,23 +155,7 @@ exports.updateClubBackgroundImage = async (req, res) => {
     }
 }
 
-// exports.updateClubBg = async (req, res) => {
-//     try {
-//         if (!req.file) {
-//             return res.status(401).send({ message: "Please choose 1 image to upload (jpeg, png, jpg)" })
-//         }
-//         const club = await Club.findById(req.params.clubId)
-//         if (!club) {
-//             return res.status(404).send({ message: "Error! Cant upload background. Club not found" })
-//         }
 
-//         club.backgroundUrl = req.file.location
-//         await club.save()
-//         return res.status(200).send({ message: "Upload success", backgroundUrl: req.file.location })
-//     } catch (error) {
-//         return res.status(500).send(error)
-//     }
-// }
 
 // Update club data, require president account
 exports.updateClub = async (req, res) => {

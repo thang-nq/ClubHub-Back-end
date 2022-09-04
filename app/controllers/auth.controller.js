@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
         dob: req.body.dob,
         snumber: req.body.email.split("@")[0],
         phone: req.body.phone,
-        roles: req.body.roles,
+        isAdmin: req.body.isAdmin || false,
         password: bcrypt.hashSync(req.body.password, 8),
         confirmationCode: token
     })
@@ -80,7 +80,7 @@ exports.signin = async (req, res) => {
         name: user.name,
         username: user.username,
         avatarUrl: user.avatarUrl,
-        roles: user.roles,
+        roles: user.isAdmin ? "admin" : "user",
         accessToken: token
     })
 }

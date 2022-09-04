@@ -6,10 +6,16 @@ const Router = require('express').Router()
 // Get club create requests
 Router.get("/clubrequests", [authJwt.verifyToken, authJwt.isAdmin], controller.getClubCreateRequests)
 
-// Approve club create requests
-Router.post("/clubrequests/approve", [authJwt.verifyToken, authJwt.isAdmin], controller.approveClubCreateRequests)
+// Set club status
+Router.put("/clubs/:clubId", [authJwt.verifyToken, authJwt.isAdmin], controller.setClubStatus)
 
 // Get all clubs
 Router.get("/allclubs", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllClub)
+
+// Delete a club
+Router.delete("/clubs/:clubId", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteClub)
+
+// Update a user account status
+Router.put("/users/:userId", [authJwt.verifyToken, authJwt.isAdmin], controller.setUserAccountStatus)
 
 module.exports = Router

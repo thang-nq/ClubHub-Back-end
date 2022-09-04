@@ -18,7 +18,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
     try {
 
-        const user = await User.findById(req.userId)
+        const user = await User.findById(req.userId).populate("clubs")
         return res.status(200).send(user)
     } catch (err) {
         return res.status(500).send(err)
