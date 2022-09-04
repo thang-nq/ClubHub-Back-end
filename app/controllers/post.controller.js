@@ -100,8 +100,16 @@ exports.getClubPosts = async (req, res) => {
             return res.status(404).send({ Error: "Club not found!" })
         }
 
+        const viewMode = ["public"]
+        const user = await User.findById(req.userId)
+        user.clubs.forEach(club => {
+            if (club.club.toString() === req.params.clubId) {
+                viewMode.push("internal")
+            }
+        })
 
-        const posts = await Post.find({ club: req.params.clubId }).populate("author", "username avatarUrl")
+
+        const posts = await Post.find({ club: req.params.clubId, viewMode: { "$in": viewMode } }).populate("author club", "username name avatarUrl")
             .populate({
                 path: "comments",
                 select: "author content",
