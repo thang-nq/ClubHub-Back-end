@@ -43,7 +43,7 @@ exports.getPostList = async (req, res) => {
             clubIdArray.push(club.club)
         })
 
-        const posts = await Post.find({ club: { "$in": clubIdArray } }).populate("author", "username avatarUrl").populate({
+        const posts = await Post.find({ club: { "$in": clubIdArray } }).populate("author club", "username avatarUrl name").populate({
             path: "comments",
             select: "author content createAt",
             populate: {
