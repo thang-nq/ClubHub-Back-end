@@ -37,27 +37,13 @@ exports.getPost = async (req, res) => {
 // Get all post
 exports.getPostList = async (req, res) => {
     try {
-        // Get club posts
-        // const clubpostQuery = req.query.club
-        // if (clubpostQuery) {
-        //     const postList = await Post.find({ club: clubpostQuery }).populate("author", "username avatarUrl").populate({
-        //         path: "comments",
-        //         select: "author content createAt",
-        //         populate: {
-        //             path: "author",
-        //             model: "User",
-        //             select: "username avatarUrl"
-        //         }
-
-        //     })
-
-        //     return res.status(200).send(postList)
-        // }
-
-        // Get current post
         const user = await User.findById(req.userId)
+        let clubIdArray = []
+        user.clubs.forEach(club => {
+            clubIdArray.push(club.club)
+        })
 
-        const postList = await Post.find({ author: req.userId }, {}).populate("author", "username avatarUrl").populate({
+        const posts = await Post.find({ club: { "$in": clubIdArray } }).populate("author", "username avatarUrl").populate({
             path: "comments",
             select: "author content createAt",
             populate: {
@@ -68,7 +54,9 @@ exports.getPostList = async (req, res) => {
 
         })
 
-        return res.status(200).send(postList)
+
+
+        return res.status(200).send(posts)
     } catch (err) {
         return res.status(500).send(err)
     }
@@ -113,7 +101,15 @@ exports.getClubPosts = async (req, res) => {
         }
 
 
-        const posts = await Post.find({ club: req.params.clubId }).populate("author comments", "username avatarUrl")
+        const posts = await Post.find({ club: req.params.clubId }).populate("author", "username avatarUrl")
+            .populate({
+                path: "comments",
+                select: "author content",
+                populate: {
+                    path: "author",
+                    select: "username avatarUrl"
+                }
+            })
 
 
         return res.status(200).send(posts)
@@ -337,25 +333,35 @@ exports.updateClubPost = async (req, res) => {
         }
 
         const user = await User.findById(req.userId)
-        if (!user.clubs.includes(postToUpdate.club)) {
+
+
+        let allowUpdate = false
+        // Check writer role of the club, if the user is writer or president, allow them to delete post
+        user.clubs.forEach(club => {
+            if (club.club.toString() === postToUpdate.club.toString() && (club.role === 'writer' || club.role === 'president')) {
+                allowUpdate = true
+            }
+        })
+
+        if (!allowUpdate) {
             if (imgUrl.length > 0) {
                 imgUrl.forEach(img => {
                     deleteImage(img.key)
                 })
             }
-            return res.status(403).send({ Error: "This post is not from your club!" })
+            return res.status(403).send({ message: "Error! Cant update post not from your club" })
         }
 
         postToUpdate.content = req.body.content
         postToUpdate.location = req.body.location
         postToUpdate.updateAt = handler.getCurrentTime()
         // If the update contain images, delete old imgs from s3
-        if (imageURLs.length > 0) {
+        if (imgUrl.length > 0) {
             postToUpdate.images.forEach(image => {
                 const result = deleteImage(image.key)
                 console.log(result)
             })
-            postToUpdate.images = imageURLs
+            postToUpdate.images = imgUrl
         }
 
         await postToUpdate.save()
@@ -413,6 +419,9 @@ exports.deletePost = async (req, res) => {
 
 }
 
+
+
+// Delete club post
 exports.deleteClubPost = async (req, res) => {
     try {
         const postToDelete = await Post.findById(req.params.postId)
@@ -420,17 +429,29 @@ exports.deleteClubPost = async (req, res) => {
             return res.status(404).send({ message: "Error! Post not found" })
         }
         const user = await User.findById(req.userId)
-        if (!user.clubs.includes(postToDelete.club)) {
-            return res.status(403).send({ message: "Error! Cant delete post not from your club" })
+
+        let allowDelete = false
+        // Check writer role of the club, if the user is writer or president, allow them to delete post
+        user.clubs.forEach(club => {
+            if (club.club.toString() === postToDelete.club.toString() && (club.role === 'writer' || club.role === 'president')) {
+                allowDelete = true
+            }
+        })
+
+        if (!allowDelete) {
+            return res.status(403).send({ message: "Error! Cant delete post not from your club, or you dont have the writer permission" })
         }
 
+        // Check if post contain images, delete them
         if (postToDelete.images.length > 0) {
             postToDelete.images.forEach(image => {
                 deleteImage(image.key)
             })
         }
 
-        const deletedComments = []
+
+        // Check if post have comments => Delete all comments
+        let deletedComments = []
         // Also remember to delete comments
         for (const comment of postToDelete.comments) {
             const data = await Comment.findByIdAndDelete(comment)
@@ -438,11 +459,12 @@ exports.deleteClubPost = async (req, res) => {
             deletedComments.push(data.content)
         }
 
+        // Delete post and send data
         await postToDelete.delete()
         return res.status(200).send({ message: "Delete post successful", deletedComment: deletedComments })
 
     } catch (error) {
-
+        return res.status(500).send(error)
     }
 }
 

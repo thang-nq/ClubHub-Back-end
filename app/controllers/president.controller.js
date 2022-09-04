@@ -18,6 +18,9 @@ exports.getClubInfo = async (req, res) => {
             await president.updateOne({ $unset: { createdClub: "" } })
             return res.status(404).send({ message: "Club was deleted from the server" })
         }
+        if (club.status === 'Pending') {
+            return res.status(200).send({ clubName: club.name, status: club.status })
+        }
         return res.status(200).send({ clubData: club, memberCount: club.members.length })
     } catch (error) {
         return res.status(500).send({ message: error })
