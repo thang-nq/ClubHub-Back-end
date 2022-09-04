@@ -17,8 +17,6 @@ router.put("/:clubId/logo", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.is
 // Update/Upload a club background image
 router.put("/:clubId/bg", [authJwt.verifyToken, authJwt.isClubPrez, authJwt.isClubMember, uploadBackground], controller.updateClubBackgroundImage)
 
-
-
 // Delete a club (need accessToken)
 router.delete("/:clubId", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteClub)
 

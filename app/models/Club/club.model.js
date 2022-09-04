@@ -15,9 +15,8 @@ const Club = mongoose.model(
         },
 
         acceptingMember: {
-            type: String,
-            enum: ["yes", "no"],
-            default: "yes"
+            type: mongoose.Schema.Types.Boolean,
+            default: true
         },
 
         slogan: {
