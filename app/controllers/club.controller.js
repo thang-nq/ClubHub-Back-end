@@ -10,10 +10,10 @@ exports.getAllClub = async (req, res) => {
     try {
         const recruit_query = req.query.recruit
         if (recruit_query == 'true') {
-            const clubs = await Club.find({ status: "Active", acceptingMember: "yes" }).populate("president members", "username avatarUrl")
+            const clubs = await Club.find({ status: "Active", acceptingMember: "yes" }).populate("president members", "username name avatarUrl")
             return res.status(200).send(clubs)
         }
-        const clubs = await Club.find({ status: "Active" }).populate("president members", "username dob name gender email avatarUrl")
+        const clubs = await Club.find({ status: "Active" }).populate("president members", "username name avatarUrl")
         return res.status(200).send(clubs)
     } catch (error) {
         return res.status(500).send({ error: error })

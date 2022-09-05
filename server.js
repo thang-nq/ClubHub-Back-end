@@ -11,6 +11,7 @@ const commentRoute = require('./app/routes/comment.routes')
 const clubRoute = require('./app/routes/club.routes')
 const presidentRoute = require('./app/routes/president.routes')
 const adminRoute = require('./app/routes/admin.routes')
+const searchRoute = require('./app/routes/search.routes')
 //Test route for debugging
 const testRoute = require('./app/routes/test.routes')
 
@@ -50,6 +51,7 @@ app.use("/api/clubs", clubRoute)
 app.use("/api/comment", commentRoute);
 app.use("/api/president", presidentRoute)
 app.use("/api/admin", adminRoute)
+app.use("/api/search", searchRoute)
 app.use("/test", testRoute)
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`)
