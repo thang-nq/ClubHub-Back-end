@@ -6,6 +6,9 @@ const Router = require('express').Router()
 // Get club create requests
 Router.get("/clubrequests", [authJwt.verifyToken, authJwt.isAdmin], controller.getClubCreateRequests)
 
+// Search user that not belong to a club
+Router.post("/users/search", [authJwt.verifyToken, authJwt.isAdmin], controller.searchUserNotInClub)
+
 // Set club status
 Router.put("/clubs/:clubId", [authJwt.verifyToken, authJwt.isAdmin], controller.setClubStatus)
 
@@ -17,5 +20,8 @@ Router.delete("/clubs/:clubId", [authJwt.verifyToken, authJwt.isAdmin], controll
 
 // Update a user account status
 Router.put("/users/:userId", [authJwt.verifyToken, authJwt.isAdmin], controller.setUserAccountStatus)
+
+// Remove a user from club
+Router.delete("/clubs/members/remove", [authJwt.verifyToken, authJwt.isAdmin], controller.removeUserFromClub)
 
 module.exports = Router

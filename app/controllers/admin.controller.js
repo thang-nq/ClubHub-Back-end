@@ -1,5 +1,6 @@
 const db = require('./../models')
 const { deleteImage } = require('./../handler/handleImagesUpload')
+const { handler } = require('../handler/handler')
 const User = db.user
 const Post = db.post
 const Club = db.club
@@ -104,16 +105,99 @@ exports.setUserAccountStatus = async (req, res) => {
         await user.save()
         return res.status(200).send({ message: `Success! Set user ${user.username} account to ${req.body.status}` })
 
-
-
-
     } catch (error) {
         return res.status(500).send({ message: error })
     }
 }
 
 
-// 
+// Get list of user not in a a club
+exports.searchUserNotInClub = async (req, res) => {
+    try {
+
+        const userProjection = { password: 0, confirmationCode: 0 }
+        if (!req.body.value || !req.body.clubId) {
+            return res.status(400).send({ message: "Missing search value or clubId" })
+        }
+        const payload = req.body.value.trim()
+        const users = await User.find({ $and: [{ snumber: { $regex: new RegExp('^' + payload + '.*', 'i') } }, { "clubs": { $not: { $elemMatch: { club: req.body.clubId } } } }] }, userProjection)
+
+        return res.status(200).send(users)
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
+// Admin add user to club
+exports.addUserToClub = async (req, res) => {
+    try {
+        if (!req.body.clubId || !req.body.userId || !req.body.role) {
+            return res.status(400).send({ message: "Error, missing clubId or userId or role" })
+        }
+
+        if (req.body.role !== 'president'
+            && req.body.role !== 'user'
+            && req.body.role !== 'writer') {
+            return res.status(400).send({ message: "Invalid role, must be {president, user, writer}" })
+        }
+
+        const user = await User.findById(req.body.userId)
+        if (!user) {
+            return res.status(404).send({ message: "Error, user not found!" })
+        }
+        const club = await Club.findById(req.body.clubId)
+        if (!club) {
+            return res.status(404).send({ message: "Error! Club not found!" })
+        }
+
+        if (club.members.includes(user._id)) {
+            return res.status(400).send({ message: "Error! This user is already in this club!" })
+        }
+
+        const clubObject = {
+            club: club.id,
+            role: req.body.role,
+            joinDate: handler.getCurrentTime()
+        }
+        await user.updateOne({ $push: { clubs: clubObject } })
+        await club.updateOne({ $push: { members: user.id } })
+
+        return res.status(200).send({ message: `Success! Add member ${user.username} to ${club.name} as ${req.body.role} successfull` })
+
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
+// Admin remove user from a club
+exports.removeUserFromClub = async (req, res) => {
+    try {
+        if (!req.body.clubId || !req.body.userId) {
+            return res.status(400).send({ message: "Empty clubId or userId" })
+        }
+        const user = await User.findById(req.body.userId)
+        if (!user) {
+            return res.status(404).send({ message: "User not found!" })
+        }
+        const club = await Club.findById(req.body.clubId)
+        if (!club) {
+            return res.status(404).send({ message: "Club not found!" })
+        }
+
+        if (!club.members.includes(user._id)) {
+            return res.status(400).send({ message: "Error, this user is not a member of this club" })
+        }
+
+        await club.updateOne({ $pull: { members: user._id } })
+        await user.updateOne({ $pull: { clubs: { club: club.id } } })
+
+        return res.status(200).send({ message: `Remove user ${user.username} from ${club.name} successful!` })
+
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
 
 
 
