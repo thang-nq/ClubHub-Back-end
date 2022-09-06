@@ -71,6 +71,8 @@ const Club = mongoose.model(
                 ref: "Event"
             }
         ],
+
+        createDate: String
     })
 )
 
