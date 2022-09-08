@@ -22,7 +22,7 @@ Router.delete("/clubs/:clubId", [authJwt.verifyToken, authJwt.isAdmin], controll
 Router.put("/users/:userId", [authJwt.verifyToken, authJwt.isAdmin], controller.setUserAccountStatus)
 
 // Add user to club
-Router.put("/clubs/addmember", [authJwt.verifyToken, authJwt.isAdmin], controller.addUserToClub)
+Router.put("/members/add", [authJwt.verifyToken, authJwt.isAdmin], controller.addUserToClub)
 
 // Remove a user from club
 Router.delete("/clubs/members/remove", [authJwt.verifyToken, authJwt.isAdmin], controller.removeUserFromClub)
