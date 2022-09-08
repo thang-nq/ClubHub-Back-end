@@ -28,7 +28,7 @@ exports.getClub = async (req, res) => {
         const club = await Club.findById(req.params.clubId).populate("president", "name username avatarUrl").populate({
             path: "members",
             model: "User",
-            select: "name username avatarUrl snumber clubs"
+            select: "name username avatarUrl snumber email gender clubs"
         })
         if (!club) {
             return res.status(404).send({ message: "Club not found!" })
