@@ -57,9 +57,12 @@ exports.deleteClub = async (req, res) => {
         }
         const posts = await Post.find({ club: req.params.clubId })
         // Revoke all role from members in club
-        // for (const member of clubToDelete.members) {
-        //     await User.findByIdAndUpdate(member, { $pull: { "clubs.$.club": clubToDelete.id } })
-        // }
+        for (const member of clubToDelete.members) {
+            await User.findByIdAndUpdate(member, { $pull: { clubs: { club: clubToDelete.id } } })
+        }
+
+        const president = await User.findById(clubToDelete.president.id)
+        await president.updateOne({ $unset: { createdClub } })
 
         let totalImg = 0
         let totalComment = 0
@@ -120,9 +123,9 @@ exports.searchUserNotInClub = async (req, res) => {
             return res.status(400).send({ message: "Missing search value or clubId" })
         }
         const payload = req.body.value.trim()
-        const users = await User.find({ $and: [{ snumber: { $regex: new RegExp('^' + payload + '.*', 'i') } }, { "clubs": { $not: { $elemMatch: { club: req.body.clubId } } } }] }, userProjection)
+        const user = await User.findOne({ $and: [{ snumber: { $regex: new RegExp('^' + payload + '.*', 'i') } }, { "clubs": { $not: { $elemMatch: { club: req.body.clubId } } } }] }, userProjection)
 
-        return res.status(200).send(users)
+        return res.status(200).send(user)
     } catch (error) {
         return res.status(500).send({ message: error })
     }
