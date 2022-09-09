@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
         dob: req.body.dob,
         snumber: req.body.email.split("@")[0],
         phone: req.body.phone,
-        // accstatus: "Active",
+        accstatus: "Active",
         isAdmin: req.body.isAdmin || false,
         password: bcrypt.hashSync(req.body.password, 8),
         confirmationCode: token
@@ -33,11 +33,11 @@ exports.signup = async (req, res) => {
             return res.status(500).send(err)
         }
 
-        nodemailer.sendConfirmationEmail(
-            user.name,
-            user.email,
-            user.confirmationCode
-        )
+        // nodemailer.sendConfirmationEmail(
+        //     user.name,
+        //     user.email,
+        //     user.confirmationCode
+        // )
         return res.status(200).send({ message: `Sign up successfully! Please check your email` })
     })
 
@@ -69,8 +69,11 @@ exports.signin = async (req, res) => {
     }
 
     // If user account is not active
-    if (user.accstatus != 'Active') {
+    if (user.accstatus === 'Pending') {
         return res.status(401).send({ message: "Please check your email to activate this account!" })
+    }
+    if (user.accstatus === 'Banned') {
+        return res.status(403).send({ message: "Your account has been banned!" })
     }
 
     // Generate token if pass all check
