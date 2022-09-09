@@ -32,11 +32,11 @@ exports.signup = async (req, res) => {
             return res.status(500).send(err)
         }
 
-        // nodemailer.sendConfirmationEmail(
-        //     user.name,
-        //     user.email,
-        //     user.confirmationCode
-        // )
+        nodemailer.sendConfirmationEmail(
+            user.name,
+            user.email,
+            user.confirmationCode
+        )
         return res.status(200).send({ message: `Sign up as ${user.roles} successfully! Please check your email` })
     })
 

@@ -26,7 +26,7 @@ const User = mongoose.model(
 
                 role: {
                     type: String,
-                    enum: ["member", "writer", "president"]
+                    enum: ["Member", "Writer", "President"]
                 },
 
                 joinDate: String,
