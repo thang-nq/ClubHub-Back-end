@@ -26,7 +26,7 @@ const User = mongoose.model(
 
                 role: {
                     type: String,
-                    enum: ["user", "writer", "president"]
+                    enum: ["member", "writer", "president"]
                 },
 
                 joinDate: String,
@@ -73,7 +73,14 @@ const User = mongoose.model(
             enum: ["user", "clubprez", "clubcw", "admin"],
             default: 'user',
             require: true
-        }
+        },
+
+        pendingRequests: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "JoinRequest"
+            }
+        ]
     })
 )
 

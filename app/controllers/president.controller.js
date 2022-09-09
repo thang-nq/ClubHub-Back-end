@@ -86,7 +86,7 @@ exports.approveOrRecjectMember = async (req, res) => {
 
         const clubObject = {
             club: club.id,
-            role: "user",
+            role: "member",
             joinDate: handler.getCurrentTime()
         }
         await user.updateOne({ $push: { clubs: clubObject } })
