@@ -51,6 +51,7 @@ exports.setClubStatus = async (req, res) => {
 // Delete a club
 exports.deleteClub = async (req, res) => {
     try {
+
         const clubToDelete = await Club.findById(req.params.clubId)
         if (!clubToDelete) {
             return res.status(404).send({ Error: "Club not found!" })
@@ -60,9 +61,7 @@ exports.deleteClub = async (req, res) => {
         for (const member of clubToDelete.members) {
             await User.findByIdAndUpdate(member, { $pull: { clubs: { club: clubToDelete.id } } })
         }
-
-        const president = await User.findById(clubToDelete.president.id)
-        await president.updateOne({ $unset: { createdClub } })
+        const president = await User.findByIdAndUpdate(clubToDelete.president, { $unset: { createdClub: "" } })
 
         let totalImg = 0
         let totalComment = 0
@@ -88,7 +87,7 @@ exports.deleteClub = async (req, res) => {
 
         await clubToDelete.deleteOne()
 
-        return res.status(200).send({ message: `Success! Deleted club ${clubToDelete.name} and ${posts.length} post(s) with ${totalImg} image(s), ${totalComment} comment(s) create by the club` })
+        return res.status(200).send({ message: `Success! Deleted club ${clubToDelete.name}` })
     } catch (error) {
         return res.status(500).send({ message: error })
     }
@@ -138,9 +137,9 @@ exports.addUserToClub = async (req, res) => {
             return res.status(400).send({ message: "Error, missing clubId or userId or role" })
         }
 
-        if (req.body.role !== 'president'
-            && req.body.role !== 'user'
-            && req.body.role !== 'writer') {
+        if (req.body.role !== 'President'
+            && req.body.role !== 'User'
+            && req.body.role !== 'Writer') {
             return res.status(400).send({ message: "Invalid role, must be {president, user, writer}" })
         }
 

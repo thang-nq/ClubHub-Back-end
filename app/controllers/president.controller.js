@@ -15,7 +15,8 @@ exports.getClubInfo = async (req, res) => {
         }
         const club = await Club.findById(president.createdClub).populate("president", "username name avatarUrl")
         if (!club) {
-            await president.updateOne({ $unset: { createdClub: "" } })
+            await president.updateOne({ $unset: { createdClub: "" }, $pull: { clubs: { club: president.createdClub } } })
+
             return res.status(404).send({ message: "Club was deleted from the server" })
         }
         if (club.status === 'Pending') {

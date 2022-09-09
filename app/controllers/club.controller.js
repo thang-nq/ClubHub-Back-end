@@ -73,7 +73,7 @@ exports.createClub = async (req, res) => {
             role: "president",
             joinDate: handler.getCurrentTime()
         }
-        await User.findByIdAndUpdate(req.userId, { $push: { clubs: clubObject }, $set: { createdClub: club.id } })
+
 
         // Save club as pending and wait for admin to approve
         const savedClub = club.save((err, result) => {
@@ -85,6 +85,8 @@ exports.createClub = async (req, res) => {
 
                 return res.status(500).send({ error: customErrMessage })
             }
+
+            User.findByIdAndUpdate(req.userId, { $push: { clubs: clubObject }, $set: { createdClub: club.id } }).exec().then(result => console.log('New create club request'))
 
             return res.status(200).send({ message: "Club creation request send success!", clubInfo: result })
         })
