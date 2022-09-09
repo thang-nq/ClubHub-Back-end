@@ -138,7 +138,7 @@ exports.clubMemberSetRole = async (req, res) => {
             return res.status(404).send({ Error: "Member data not found on the server!" })
         }
 
-        if (req.body.role === "user" || req.body.role === "writer") {
+        if (req.body.role === "member" || req.body.role === "writer") {
             await User.updateOne({ username: memberData.username, "clubs.club": club.id }, { $set: { "clubs.$.role": req.body.role } })
             return res.status(200).send({ message: `Set user ${memberData.username} to ${req.body.role} successfully!` })
 
