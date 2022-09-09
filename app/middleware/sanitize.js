@@ -10,7 +10,6 @@ const usernameRegex = "^[A-Za-z0-9._-]{8,16}$"
 
 const sanitizeSignupRequest = (req, res, next) => {
     //Check missing input
-    console.log(req.body)
     if (!req.body.email || !req.body.password || !req.body.username || !req.body.dob) {
         return res.status(400).send({ message: "Missing one of the required parameter" })
     }

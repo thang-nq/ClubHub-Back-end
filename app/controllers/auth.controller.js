@@ -22,7 +22,7 @@ exports.signup = async (req, res) => {
         dob: req.body.dob,
         snumber: req.body.email.split("@")[0],
         phone: req.body.phone,
-        accstatus: "Active",
+        // accstatus: "Active",
         isAdmin: req.body.isAdmin || false,
         password: bcrypt.hashSync(req.body.password, 8),
         confirmationCode: token
