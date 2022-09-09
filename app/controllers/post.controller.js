@@ -346,7 +346,7 @@ exports.updateClubPost = async (req, res) => {
         let allowUpdate = false
         // Check writer role of the club, if the user is writer or president, allow them to delete post
         user.clubs.forEach(club => {
-            if (club.club.toString() === postToUpdate.club.toString() && (club.role === 'writer' || club.role === 'president')) {
+            if (club.club.toString() === postToUpdate.club.toString() && (club.role === 'Writer' || club.role === 'President')) {
                 allowUpdate = true
             }
         })
@@ -441,7 +441,7 @@ exports.deleteClubPost = async (req, res) => {
         let allowDelete = false
         // Check writer role of the club, if the user is writer or president, allow them to delete post
         user.clubs.forEach(club => {
-            if (club.club.toString() === postToDelete.club.toString() && (club.role === 'writer' || club.role === 'president')) {
+            if (club.club.toString() === postToDelete.club.toString() && (club.role === 'Writer' || club.role === 'President')) {
                 allowDelete = true
             }
         })
