@@ -70,7 +70,7 @@ exports.createClub = async (req, res) => {
         // Add president role for the club creator
         const clubObject = {
             club: club.id,
-            role: "president",
+            role: "President",
             joinDate: handler.getCurrentTime()
         }
 
