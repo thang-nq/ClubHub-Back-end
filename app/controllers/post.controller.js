@@ -109,7 +109,7 @@ exports.getClubPosts = async (req, res) => {
         })
 
 
-        const posts = await Post.find({ club: req.params.clubId, viewMode: { "$in": viewMode } }).populate("author club", "username name avatarUrl")
+        const posts = await Post.find({ club: req.params.clubId, viewMode: { "$in": viewMode } }).sort({ createAt: -1 }).populate("author club", "username name avatarUrl")
             .populate({
                 path: "comments",
                 select: "author content",
