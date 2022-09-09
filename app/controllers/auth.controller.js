@@ -22,6 +22,7 @@ exports.signup = async (req, res) => {
         dob: req.body.dob,
         snumber: req.body.email.split("@")[0],
         phone: req.body.phone,
+        accstatus: "Active",
         isAdmin: req.body.isAdmin || false,
         password: bcrypt.hashSync(req.body.password, 8),
         confirmationCode: token
@@ -37,7 +38,7 @@ exports.signup = async (req, res) => {
             user.email,
             user.confirmationCode
         )
-        return res.status(200).send({ message: `Sign up as ${user.roles} successfully! Please check your email` })
+        return res.status(200).send({ message: `Sign up successfully! Please check your email` })
     })
 
 
