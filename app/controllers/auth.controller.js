@@ -22,7 +22,6 @@ exports.signup = async (req, res) => {
         dob: req.body.dob,
         snumber: req.body.email.split("@")[0],
         phone: req.body.phone,
-        accstatus: "Active",
         isAdmin: req.body.isAdmin || false,
         password: bcrypt.hashSync(req.body.password, 8),
         confirmationCode: token
@@ -33,11 +32,11 @@ exports.signup = async (req, res) => {
             return res.status(500).send(err)
         }
 
-        // nodemailer.sendConfirmationEmail(
-        //     user.name,
-        //     user.email,
-        //     user.confirmationCode
-        // )
+        nodemailer.sendConfirmationEmail(
+            user.name,
+            user.email,
+            user.confirmationCode
+        )
         return res.status(200).send({ message: `Sign up successfully! Please check your email` })
     })
 
@@ -97,10 +96,11 @@ exports.verifyUser = (req, res) => {
     })
         .then((user) => {
             if (!user) {
-                return res.status(404).send({ message: 'User not found.' })
+                return res.status(404).send({ message: 'Action expired.' })
             }
 
             user.accstatus = "Active"
+            user.confirmationCode = ""
             user.save((err) => {
                 if (err) {
                     return res.status(500).send({ message: err })

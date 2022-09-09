@@ -12,4 +12,5 @@ db.comment = require('./Comment/comment.model')
 db.event = require('./Event/event.model')
 db.joinrequest = require('./Club/JoinClubRequest/request.model')
 db.passwordreset = require('./auth/passwordreset')
+db.notification = require('./notification/notification.model')
 module.exports = db
