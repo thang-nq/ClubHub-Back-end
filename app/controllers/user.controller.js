@@ -54,7 +54,7 @@ exports.updateUser = async (req, res) => {
         const usernameRegex = "^[A-Za-z0-9._-]{8,16}$"
         if (req.body.username) {
             const processUsername = req.body.username.trim().toLowerCase()
-            if (processUsername.match(usernameRegex)) {
+            if (!processUsername.match(usernameRegex)) {
                 return res.status(400).send({ message: "Error, username not valid, wrong format (8-16 characters)" })
             }
             const duplicateUser = await User.findOne({ username: processUsername })
