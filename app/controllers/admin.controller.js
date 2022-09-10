@@ -5,6 +5,7 @@ const User = db.user
 const Post = db.post
 const Club = db.club
 const Comment = db.comment
+const Notification = db.notification
 
 // Admin will have all control over the application data
 
@@ -62,7 +63,7 @@ exports.deleteClub = async (req, res) => {
             await User.findByIdAndUpdate(member, { $pull: { clubs: { club: clubToDelete.id } } })
         }
         const president = await User.findByIdAndUpdate(clubToDelete.president, { $unset: { createdClub: "" } })
-
+        await Notification.deleteMany({ club: clubToDelete.id })
         let totalImg = 0
         let totalComment = 0
         if (posts.length > 0) {
