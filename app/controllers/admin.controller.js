@@ -247,7 +247,7 @@ exports.changeMemberRole = async (req, res) => {
             if (req.body.role === 'President') {
                 //If user is already a president of another club
                 if (member.createdClub) {
-                    return res.status(400).send({ message: `This user is already a president of another club` })
+                    return res.status(401).send({ message: `This user is already a president of another club` })
                 }
                 await member.updateOne({ $set: { createdClub: club.id } })
                 await club.updateOne({ $set: { president: member._id } })
