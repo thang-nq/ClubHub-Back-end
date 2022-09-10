@@ -1,9 +1,12 @@
 const { handler } = require('../handler/handler')
 const db = require('./../models')
 const Nofitication = db.notification
+const User = db.user
 
 exports.getNotification = async (req, res) => {
     try {
+        const user = await User.findById(req.userId)
+        // const clubs = user.clubs
         const notis = await Nofitication.find().sort({ createAt: -1 }).populate("club", "logoUrl name")
         return res.status(200).send(notis)
     } catch (error) {

@@ -264,6 +264,53 @@ exports.changeMemberRole = async (req, res) => {
 }
 
 
+// Delete user
+exports.deleteUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId)
+        if (!user) {
+            return res.status(404).send({ message: "User not found!" })
+        }
+
+        // If delete a president of a club
+        if (user.createdClub) {
+            const club = await Club.findById(user.createdClub)
+            if (club) {
+                await club.updateOne({ $unset: { president: "" } })
+            }
+
+        }
+
+        // Remove user from club members list
+        for (const club of user.clubs) {
+            await Club.findByIdAndUpdate(club.club, { $pull: { members: user.id } })
+        }
+
+        // Delete post and comments
+        const posts = await Post.find({ author: user.id })
+        if (posts.length > 0) {
+            // Delete post images
+            for (const post of posts) {
+                if (post.images.length > 0) {
+                    post.images.forEach(image => {
+                        deleteImage(image.key)
+                    })
+                }
+                await post.delete()
+            }
+        }
+        // Delete comment
+        await Comment.deleteMany({ author: user.id })
+
+        // Delete user data
+        await user.delete()
+        return res.status(200).send({ message: "Delete user successful!, also delete related posts, comment" })
+
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
 
 
 

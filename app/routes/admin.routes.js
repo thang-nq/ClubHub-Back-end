@@ -30,4 +30,7 @@ Router.delete("/clubs/members/remove", [authJwt.verifyToken, authJwt.isAdmin], c
 // Set club member role 
 Router.put("/clubs/members/role", [authJwt.verifyToken, authJwt.isAdmin], controller.changeMemberRole)
 
+// Delete a user
+Router.delete("/users/delete/:userId", [authJwt.verifyToken, authJwt.isAdmin], controller.deleteUser)
+
 module.exports = Router
