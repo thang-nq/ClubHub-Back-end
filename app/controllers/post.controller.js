@@ -162,6 +162,8 @@ exports.createNewClubPost = async (req, res) => {
             createAt: handler.getCurrentTime(),
             message: `New post has been created by ${creator.username}`
         })
+
+        await notify.save()
         newPost.save((err, result) => {
             if (err) {
                 if (imageURLs.length > 0) {

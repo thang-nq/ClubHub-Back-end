@@ -4,7 +4,7 @@ const Nofitication = db.notification
 
 exports.getNotification = async (req, res) => {
     try {
-        const notis = await Nofitication.find()
+        const notis = await Nofitication.find().populate("club", "logoUrl name")
         return res.status(200).send(notis)
     } catch (error) {
         return res.status(500).send({ message: error })
