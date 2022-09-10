@@ -51,10 +51,26 @@ exports.updateUser = async (req, res) => {
     // All error handled at verify token
     try {
         const userToUpdate = await User.findById(req.userId)
+        const usernameRegex = "^[A-Za-z0-9._-]{8,16}$"
+        if (req.body.username) {
+            const processUsername = req.body.username.trim().toLowerCase()
+            if (processUsername.match(usernameRegex)) {
+                return res.status(400).send({ message: "Error, username not valid, wrong format (8-16 characters)" })
+            }
+            const duplicateUser = await User.findOne({ username: processUsername })
+            if (duplicateUser) {
+                return res.status(401).send({ message: "Error, username already exist" })
+            }
+            userToUpdate.username = req.body.username
+        }
+
         userToUpdate.name = req.body.name || userToUpdate.name
         userToUpdate.dob = req.body.dob || userToUpdate.dob
         userToUpdate.phone = req.body.phone || userToUpdate.phone
         userToUpdate.gender = req.body.gender || userToUpdate.gender
+
+        await userToUpdate.save()
+        return res.status(200).send({ message: "Update user sucess!", userToUpdate })
     } catch (error) {
         return res.status(500).send({ message: error })
     }

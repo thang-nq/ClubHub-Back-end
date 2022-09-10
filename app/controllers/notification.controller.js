@@ -7,7 +7,6 @@ exports.getNotification = async (req, res) => {
     try {
         const user = await User.findById(req.userId)
         const clubIds = user.clubs.map(club => club.club)
-        console.log(clubIds)
         const notis = await Nofitication.find({ club: { $in: clubIds } }).sort({ createAt: -1 }).populate("club", "logoUrl name")
         return res.status(200).send(notis)
     } catch (error) {
