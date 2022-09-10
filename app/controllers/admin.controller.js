@@ -237,6 +237,10 @@ exports.changeMemberRole = async (req, res) => {
                     await member.updateOne({ $unset: { createdClub: "" } })
                 }
             }
+
+            if (req.body.role === 'President') {
+                return res.status(400).send({ message: "This club already have a president, please try again" })
+            }
         }
         else {
             // If user is not president and admin set that user to president
