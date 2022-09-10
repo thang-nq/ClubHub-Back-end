@@ -1,6 +1,7 @@
 const db = require('./../models')
 const { DeleteObjectCommand } = require('@aws-sdk/client-s3')
 const { handler } = require('../handler/handler')
+const Post = require('../models/Post/post.model')
 const Club = db.club
 const User = db.user
 const JoinClubRQ = db.joinrequest
@@ -205,5 +206,33 @@ exports.requestToJoinClub = async (req, res) => {
         return res.status(200).send({ message: "Request send successfully, please wait for president approval!" })
     } catch (error) {
         return res.status(500).send({ error: error })
+    }
+}
+
+
+exports.getFeatureImages = async (req, res) => {
+    try {
+        const club = await Club.findById(req.params.clubId)
+        if (!club) {
+            return res.status(404).send({ message: "Club not found!" })
+        }
+
+        let featuresImage = []
+        const posts = await Post.find({ club: req.params.clubId }).sort({ createAt: -1 })
+        posts.forEach(post => {
+            if (post.images.length > 0) {
+                featuresImage.push(post.images[0])
+            }
+        })
+
+        if (featuresImage.length > 0) {
+
+            featuresImage = featuresImage.slice(0, 6)
+        }
+
+        return res.status(200).send(featuresImage)
+
+    } catch (error) {
+        return res.status(500).send({ message: error })
     }
 }
