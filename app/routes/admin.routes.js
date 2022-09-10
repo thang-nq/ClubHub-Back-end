@@ -27,4 +27,7 @@ Router.put("/members/add", [authJwt.verifyToken, authJwt.isAdmin], controller.ad
 // Remove a user from club
 Router.delete("/clubs/members/remove", [authJwt.verifyToken, authJwt.isAdmin], controller.removeUserFromClub)
 
+// Set club member role 
+Router.put("/clubs/members/role", [authJwt.verifyToken, authJwt.isAdmin], controller.changeMemberRole)
+
 module.exports = Router

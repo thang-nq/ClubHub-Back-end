@@ -137,16 +137,18 @@ exports.addUserToClub = async (req, res) => {
             return res.status(400).send({ message: "Error, missing clubId or userId or role" })
         }
 
-        if (req.body.role !== 'President'
-            && req.body.role !== 'Member'
+        if (req.body.role !== 'Member'
             && req.body.role !== 'Content Writer') {
-            return res.status(400).send({ message: "Invalid role, must be {president, user, writer}" })
+            return res.status(400).send({ message: "Invalid role, must be { Member, Writer}" })
         }
+
 
         const user = await User.findById(req.body.userId)
         if (!user) {
             return res.status(404).send({ message: "Error, user not found!" })
         }
+
+
         const club = await Club.findById(req.body.clubId)
         if (!club) {
             return res.status(404).send({ message: "Error! Club not found!" })
@@ -190,11 +192,62 @@ exports.removeUserFromClub = async (req, res) => {
             return res.status(400).send({ message: "Error, this user is not a member of this club" })
         }
 
+        if (club.president._id.toString() === user.id) {
+            await club.updateOne({ $unset: { president: "" } })
+            await user.updateOne({ $unset: { createdClub: "" } })
+        }
+
         await club.updateOne({ $pull: { members: user._id } })
         await user.updateOne({ $pull: { clubs: { club: club.id } } })
 
         return res.status(200).send({ message: `Remove user ${user.username} from ${club.name} successful!` })
 
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
+
+// Change club member role
+exports.changeMemberRole = async (req, res) => {
+    try {
+
+        // Check valid role in request body
+        if (req.body.role !== 'President' && req.body.role !== 'Content Writer' && req.body.role !== 'Member') {
+            return res.status(400).send({ Error: "Invalid role parameter {President, Content Writer, Member}" })
+        }
+
+        // Check club exist
+        const club = await Club.findById(req.body.clubId)
+        if (!club) {
+            return res.status(404).send({ Error: "Club not found!" })
+        }
+
+        // Check memeber exist
+        const member = await User.findById(req.body.userId)
+        if (!member) {
+            return res.status(404).send({ Error: "Member not found!" })
+        }
+
+        // Check if the member is president, set to another role will demote the president, the club president position will be empty untill admin set another member for president
+        if (club.president._id.toString() === req.body.userId) {
+            if (req.body.role !== 'President') {
+                await club.updateOne({ $unset: { president: "" } })
+                await member.updateOne({ $unset: { createdClub: "" } })
+            }
+        } else {
+            // If user is not president and admin set that user to president
+            if (req.body.role === 'President') {
+                if (club.president) {
+                    return res.status(400).send({ message: "Club already had a president, please demote the current president first" })
+                }
+                await club.updateOne({ $set: { president: member._id } })
+            }
+        }
+
+
+        // Update club role to corresponding value
+        await User.updateOne({ username: member.username, "clubs.club": club.id }, { $set: { "clubs.$.role": req.body.role } })
+        return res.status(200).send({ message: `Success! ${member.username} 's role is now ${req.body.role}` })
     } catch (error) {
         return res.status(500).send({ message: error })
     }
