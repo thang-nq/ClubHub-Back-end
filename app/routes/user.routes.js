@@ -16,7 +16,10 @@ Router.get("/profile", authJwt.verifyToken, controller.getUser)
 Router.post("/profile/avatar", [authJwt.verifyToken, uploadAvatar], controller.updateUserAvatar)
 
 // User - Update personal information
-Router.put("/user", [authJwt.verifyToken], controller.updateUser)
+Router.put("/profile", [authJwt.verifyToken], controller.updateUser)
+
+// Get a user
+Router.get("/:userId", [authJwt.verifyToken, authJwt.isAdmin], controller.getUserById)
 
 // test route
 Router.get("/", controller.testTemp)
