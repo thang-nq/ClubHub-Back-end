@@ -229,17 +229,23 @@ exports.changeMemberRole = async (req, res) => {
         }
 
         // Check if the member is president, set to another role will demote the president, the club president position will be empty untill admin set another member for president
-        if (club.president._id.toString() === req.body.userId) {
-            if (req.body.role !== 'President') {
-                await club.updateOne({ $unset: { president: "" } })
-                await member.updateOne({ $unset: { createdClub: "" } })
+        if (club.president) {
+            // Demote president
+            if (club.president.toString() === req.body.userId) {
+                if (req.body.role !== 'President') {
+                    await club.updateOne({ $unset: { president: "" } })
+                    await member.updateOne({ $unset: { createdClub: "" } })
+                }
             }
-        } else {
+        }
+        else {
             // If user is not president and admin set that user to president
             if (req.body.role === 'President') {
-                if (club.president) {
-                    return res.status(400).send({ message: "Club already had a president, please demote the current president first" })
+                //If user is already a president of another club
+                if (member.createdClub) {
+                    return res.status(400).send({ message: `This user is already a president of another club` })
                 }
+                await member.updateOne({ $set: { createdClub: club.id } })
                 await club.updateOne({ $set: { president: member._id } })
             }
         }
