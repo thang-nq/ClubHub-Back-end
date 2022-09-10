@@ -80,7 +80,7 @@ const isClubCW = async (req, res, next) => {
         if (user.clubs.length > 0) {
             user.clubs.forEach(club => {
                 if (club.club._id.toString() === req.params.clubId
-                    && (club.role === "Writer" || club.role === "President")) {
+                    && (club.role === "Content Writer" || club.role === "President")) {
                     isAllowed = true
                 }
             })

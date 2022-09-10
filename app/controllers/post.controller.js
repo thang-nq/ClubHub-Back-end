@@ -7,6 +7,7 @@ const Club = require('../models/Club/club.model')
 const Post = db.post
 const User = db.user
 const Comment = db.comment
+const Notification = db.notification
 
 
 
@@ -152,9 +153,15 @@ exports.createNewClubPost = async (req, res) => {
             images: imageURLs
         })
 
+        const creator = await User.findById(req.userId)
         newPost.createAt = handler.getCurrentTime()
         newPost.viewMode = req.body.viewMode || "public"
 
+        const notify = new Notification({
+            club: req.params.clubId,
+            createAt: handler.getCurrentTime(),
+            message: `New post has been created by ${creator.username}`
+        })
         newPost.save((err, result) => {
             if (err) {
                 if (imageURLs.length > 0) {
@@ -346,7 +353,7 @@ exports.updateClubPost = async (req, res) => {
         let allowUpdate = false
         // Check writer role of the club, if the user is writer or president, allow them to delete post
         user.clubs.forEach(club => {
-            if (club.club.toString() === postToUpdate.club.toString() && (club.role === 'Writer' || club.role === 'President')) {
+            if (club.club.toString() === postToUpdate.club.toString() && (club.role === 'Content Writer' || club.role === 'President')) {
                 allowUpdate = true
             }
         })
@@ -441,7 +448,7 @@ exports.deleteClubPost = async (req, res) => {
         let allowDelete = false
         // Check writer role of the club, if the user is writer or president, allow them to delete post
         user.clubs.forEach(club => {
-            if (club.club.toString() === postToDelete.club.toString() && (club.role === 'Writer' || club.role === 'President')) {
+            if (club.club.toString() === postToDelete.club.toString() && (club.role === 'Content Writer' || club.role === 'President')) {
                 allowDelete = true
             }
         })

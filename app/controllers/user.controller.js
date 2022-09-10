@@ -5,9 +5,16 @@ const User = db.user
 // Get all users (full info - admin access required)
 exports.getAllUsers = async (req, res) => {
     try {
+        const userQuery = req.query.banned
+        console.log(userQuery)
+        let users = []
+        if (userQuery === "true") {
+            users = await User.find({ accstatus: "Banned" })
+        } else {
+            users = await User.find({ accstatus: "Active" })
+        }
 
-        const Users = await User.find()
-        return res.status(200).send(Users)
+        return res.status(200).send(users)
     } catch (err) {
         return res.status(500).send(err)
     }

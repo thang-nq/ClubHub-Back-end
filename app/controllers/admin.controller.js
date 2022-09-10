@@ -138,8 +138,8 @@ exports.addUserToClub = async (req, res) => {
         }
 
         if (req.body.role !== 'President'
-            && req.body.role !== 'User'
-            && req.body.role !== 'Writer') {
+            && req.body.role !== 'Member'
+            && req.body.role !== 'Content Writer') {
             return res.status(400).send({ message: "Invalid role, must be {president, user, writer}" })
         }
 
