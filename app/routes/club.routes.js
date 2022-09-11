@@ -29,6 +29,8 @@ router.get("/:clubId", controller.getClub)
 // Get club feature image
 router.get("/featureimage/:clubId", authJwt.verifyToken, controller.getFeatureImages)
 
+router.get("/events/all", controller.getEvents)
+
 
 module.exports = router
 

@@ -236,3 +236,43 @@ exports.getFeatureImages = async (req, res) => {
         return res.status(500).send({ message: error })
     }
 }
+
+// Get club event
+exports.getEvents = async (req, res) => {
+    try {
+        const events = [
+            {
+                _id: "clubevent_badminton",
+                name: "RMIT Badminton Tournament 2022",
+                startDate: "10/11/2022",
+                location: "Sport Hall",
+                imageUrl: "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent1.jpeg"
+            },
+            {
+                _id: "clubevent_recruitment",
+                name: "Recruitment Program",
+                startDate: "19/10/2022",
+                location: "Rmit Vietnam",
+                imageUrl: "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent2.jpeg"
+            },
+            {
+                _id: "clubevent_symposium",
+                name: "Global Symposium 2022",
+                startDate: "02/01/2023",
+                location: "Building 2",
+                imageUrl: "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent4.jpeg",
+            },
+            {
+                _id: "clubevent_globalexp",
+                name: "Global Experience 2022",
+                startDate: "10/11/2022",
+                location: "RMIT Vietnam",
+                imageUrl: "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3.jpeg"
+            },
+        ]
+
+        return res.status(200).send(events)
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
