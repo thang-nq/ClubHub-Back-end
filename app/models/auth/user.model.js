@@ -59,7 +59,7 @@ const User = mongoose.model(
         phone: String,
         accstatus: {
             type: String,
-            enum: ['Pending', 'Active', 'Banned'],
+            required: true,
             default: 'Pending'
         },
         confirmationCode: {
