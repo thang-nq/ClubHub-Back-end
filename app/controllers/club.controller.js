@@ -49,7 +49,7 @@ exports.getClub = async (req, res) => {
 exports.createClub = async (req, res) => {
     try {
         const president = await User.findById(req.userId)
-        if (president.createdClub) {
+        if (president.createdClub !== null || president.createdClub !== undefined) {
             return res.status(403).send({ Error: "You already create a club, each president is limit to 1 club" })
         }
 
