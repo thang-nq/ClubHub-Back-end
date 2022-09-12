@@ -60,7 +60,6 @@ const User = mongoose.model(
         accstatus: {
             type: String,
             enum: ['Pending', 'Active', 'Banned'],
-            required: true,
             default: 'Pending'
         },
         confirmationCode: {

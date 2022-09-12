@@ -10,11 +10,6 @@ const PasswordReset = mongoose.model(
             type: String,
             default: handler.getCurrentTime()
         },
-        expireAt: {
-            type: Date,
-            default: Date.now(),
-            index: { expires: 900 }
-        }
     })
 )
 

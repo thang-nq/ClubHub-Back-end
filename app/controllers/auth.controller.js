@@ -98,9 +98,8 @@ exports.verifyUser = (req, res) => {
             if (!user) {
                 return res.status(404).send({ message: 'Action expired.' })
             }
-
             user.accstatus = "Active"
-            user.confirmationCode = ""
+            user.confirmationCode = null
             user.save((err) => {
                 if (err) {
                     return res.status(500).send({ message: err })
