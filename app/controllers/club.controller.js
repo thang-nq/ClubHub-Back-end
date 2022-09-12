@@ -51,6 +51,7 @@ exports.createClub = async (req, res) => {
         const president = await User.findById(req.userId)
         const existedClub = await Club.findById(president.createdClub)
         if (existedClub != undefined || existedClub != null) {
+            console.log(existedClub)
             return res.status(403).send({ Error: "You already create a club, each president is limit to 1 club" })
         }
 
