@@ -13,7 +13,7 @@ exports.universalSearch = async (req, res) => {
         const clubProjection = { name: 1, clubCategory: 1, logoUrl: 1, backgroundUrl: 1, clubCategory: 1 }
         // const profileProjection = { username: 1, avatarUrl: 1 }
 
-        let clubs = await Club.find({ name: { $regex: new RegExp('^' + payload + '.*', 'i') }, status: "Active" }, clubProjection)
+        let clubs = await Club.find({ name: { $regex: new RegExp('^.*' + payload + '.*', 'i') }, status: "Active" }, clubProjection)
 
         // Future feature
         // let posts = await Post.find({ $or: [{ content: { $regex: new RegExp('^.*' + payload + '.*', 'i') } }, { location: { $regex: new RegExp('^' + payload + '.*', 'i') } }], viewMode: "public" }).populate("author", "username avatarUrl")
