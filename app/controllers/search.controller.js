@@ -10,7 +10,7 @@ exports.universalSearch = async (req, res) => {
             return res.status(400).send({ message: "Empty search value" })
         }
         const payload = req.body.value.trim()
-        const clubProjection = { name: 1, clubCategory: 1, logoUrl: 1 }
+        const clubProjection = { name: 1, clubCategory: 1, logoUrl: 1, backgroundUrl: 1, clubCategory: 1 }
         // const profileProjection = { username: 1, avatarUrl: 1 }
 
         let clubs = await Club.find({ name: { $regex: new RegExp('^' + payload + '.*', 'i') }, status: "Active" }, clubProjection)
