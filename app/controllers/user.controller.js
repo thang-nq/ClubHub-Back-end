@@ -1,5 +1,6 @@
 const db = require('./../models/index')
 const User = db.user
+const Club = db.club
 
 
 // Get all users (full info - admin access required)
@@ -76,6 +77,33 @@ exports.updateUser = async (req, res) => {
     }
 }
 
+
+// User-get user's club info
+exports.getUserClubInfo = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId)
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' })
+        }
+        const clubProjection = {
+            name: 1,
+            logoUrl: 1
+        }
+        let clubIds = []
+        clubIds = user.clubs.map(club => club.club)
+        const clubs = []
+        for (const clubId of clubIds) {
+            const club = await Club.findById(clubId, clubProjection)
+            if (club) {
+                clubs.push(club)
+            }
+        }
+
+        return res.status(200).send(clubs)
+    } catch (error) {
+        return res.status(500).send({ message: error })
+    }
+}
 
 // User - Update user avatar
 exports.updateUserAvatar = async (req, res) => {

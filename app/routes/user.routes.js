@@ -12,6 +12,9 @@ Router.get("/getall", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllU
 // User - get personal information
 Router.get("/profile", authJwt.verifyToken, controller.getUser)
 
+// User - get user joined club data
+Router.get("/clubs", authJwt.verifyToken, controller.getUserClubInfo)
+
 // Upload user avatar
 Router.post("/profile/avatar", [authJwt.verifyToken, uploadAvatar], controller.updateUserAvatar)
 
