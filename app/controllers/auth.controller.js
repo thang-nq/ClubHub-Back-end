@@ -90,25 +90,19 @@ exports.signin = async (req, res) => {
 
 
 //Email verification controller
-exports.verifyUser = (req, res) => {
-    User.findOne({
-        confirmationCode: req.params.confirmationCode
-    })
-        .then((user) => {
-            if (!user) {
-                return res.status(404).send(`<h1>User not found!</h1>`)
-            }
-            user.accstatus = "Active"
-            user.confirmationCode = null
-            user.save((err) => {
-                if (err) {
-                    return res.status(500).send({ message: err })
-                }
-
-                return res.status(200).send(`<h1>Account activation success</h1>`)
-            })
-        })
-        .catch((e) => console.log("error", e))
+exports.verifyUser = async (req, res) => {
+    try {
+        const user = await User.findOne({ confirmationCode: req.params.confirmationCode })
+        if (!user) {
+            return res.status(404).send(`<h1>User not found or this action is expired!</h1>`)
+        }
+        user.accstatus = "Active"
+        user.confirmationCode = null
+        await user.save()
+        return res.status(200).send(`<h1>Account activation success</h1>`)
+    } catch (error) {
+        return res.status(500).send(error)
+    }
 }
 
 // Password reset init - send email
