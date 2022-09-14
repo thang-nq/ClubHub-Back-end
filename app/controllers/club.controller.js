@@ -275,7 +275,7 @@ exports.getEvents = async (req, res) => {
                 imageUrl: ["https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3.jpeg",
                     "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/event3-1.jpeg",
                     "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3-2.jpeg",
-                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3-3.png"
+                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3-3.jpeg"
                 ]
             },
         ]
