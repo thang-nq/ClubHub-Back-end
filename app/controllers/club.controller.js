@@ -245,7 +245,7 @@ exports.getEvents = async (req, res) => {
         const events = [
             {
                 _id: "clubevent_badminton",
-                name: "RMIT Badminton Tournament 2022",
+                name: "RMIT Sports Tournament 2022",
                 startDate: "10/11/2022",
                 location: "Sport Hall",
                 imageUrl: ["https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent1.jpeg", "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent1-3.jpeg"]
@@ -255,7 +255,7 @@ exports.getEvents = async (req, res) => {
                 name: "Recruitment Program",
                 startDate: "19/10/2022",
                 location: "Rmit Vietnam",
-                imageUrl: ["https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent2.jpeg", "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent2-1.png"]
+                imageUrl: ["https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent2.jpeg", "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent2-1.jpeg"]
             },
             {
                 _id: "clubevent_symposium",
@@ -263,8 +263,8 @@ exports.getEvents = async (req, res) => {
                 startDate: "02/01/2023",
                 location: "Building 2",
                 imageUrl: ["https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent4.jpeg",
-                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent4-1.png",
-                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent4-2.png"
+                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent4-1.jpeg",
+                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent4-2.jpeg"
                 ],
             },
             {
@@ -273,8 +273,8 @@ exports.getEvents = async (req, res) => {
                 startDate: "10/11/2022",
                 location: "RMIT Vietnam",
                 imageUrl: ["https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3.jpeg",
-                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3-1.png",
-                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3-2.png",
+                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/event3-1.jpeg",
+                    "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3-2.jpeg",
                     "https://rmitclubhub-bucket.s3.ap-southeast-1.amazonaws.com/rmitevent3-3.png"
                 ]
             },
