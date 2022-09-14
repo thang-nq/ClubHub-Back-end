@@ -97,7 +97,6 @@ exports.verifyUser = async (req, res) => {
             return res.status(404).send(`<h1>User not found or this action is expired!</h1>`)
         }
         user.accstatus = "Active"
-        user.confirmationCode = null
         await user.save()
         return res.status(200).send(`<h1>Account activation success</h1>`)
     } catch (error) {
